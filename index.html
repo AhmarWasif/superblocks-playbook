@@ -104,18 +104,17 @@ button.chip:hover { border-color: var(--line-2); background: #FAFBFC; }
   background: linear-gradient(180deg, #F4F5F7 0%, #ECEEF1 100%); border: 1px solid var(--line-2); border-radius: 14px;
   padding: 24px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), inset 0 1px 0 #FFFFFF; display: flex; flex-direction: column; gap: 22px;
 }
-.flow { display: grid; grid-template-columns: 112px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 112px; gap: 26px; align-items: start; }
-.flow > * { position: relative; min-width: 0; }
-.flow > *:not(:last-child)::after {
-  content: ""; position: absolute; top: 50%; right: -24px; width: 22px; border-top: 1.5px dashed var(--line-2);
-}
-.node { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.node-frame { width: 100%; padding: 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); }
-.node-box { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 14px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
-.node-box .ic { width: 18px; height: 18px; color: var(--muted); }
-.node-chips { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.teams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.team { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); min-width: 0; }
+.team-h { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.team-h b { font-weight: 600; font-size: 13.5px; }
+.team-h span { font-size: 12px; color: var(--muted); }
+.team-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) 20px minmax(0, 1fr); gap: 10px; align-items: start; }
+.arrow { margin-top: 15px; display: grid; place-items: center; color: var(--faint); }
 .col { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
 .col-h { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13.5px; padding: 2px 4px 6px; }
+.col-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; padding: 8px 4px 0; }
 .num { width: 19px; height: 19px; border-radius: 5px; background: var(--dark); color: var(--on-dark); font-size: 11px; font-weight: 600; display: grid; place-items: center; flex: none; }
 .row {
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
@@ -131,12 +130,10 @@ button.chip:hover { border-color: var(--line-2); background: #FAFBFC; }
 .always-h { font-weight: 600; font-size: 13.5px; }
 .chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 @media (max-width: 1060px) {
-  .flow { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-  .flow > *:not(:last-child)::after { top: auto; bottom: -20px; right: auto; left: 50%; width: 0; height: 18px; border-top: 0; border-left: 1.5px dashed var(--line-2); }
-  .node { flex-direction: row; justify-content: center; flex-wrap: wrap; }
-  .node-frame { width: auto; }
-  .node-chips { flex-direction: row; flex-wrap: wrap; }
+  .flow { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .arrow { margin: 0; transform: rotate(90deg); }
 }
+@media (max-width: 700px) { .teams { grid-template-columns: minmax(0, 1fr); } }
 
 /* Cards */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; min-width: 0; }
@@ -337,6 +334,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       </div>
       <div class="stat-row" id="ov-stats"></div>
       <div class="factory">
+        <div class="teams" id="ov-teams"></div>
         <div class="flow" id="ov-flow"></div>
         <div class="always">
           <div class="always-h">Always on</div>
@@ -1027,19 +1025,26 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     var dep = val("deploy");
     var depSub = dep === "cloud" ? "Superblocks Cloud · IP allowlist" : dep === "hybrid" ? "Data plane in customer cloud" : "Full platform in customer AWS";
     var depName = dep === "cloud" ? "Cloud" : dep === "hybrid" ? "Hybrid" : "Cloud-Prem";
+    function personChip(label, id) {
+      var l = rlevel(id);
+      return '<span class="chip"><span class="dot ' + l + '"></span>' + label + ": " + (l === "ok" ? "ready" : l === "warn" ? "partly" : "not yet") + "</span>";
+    }
+    document.getElementById("ov-teams").innerHTML =
+      '<div class="team"><div class="team-h"><b>Superblocks team</b><span>Runs the deployment</span></div><div class="team-chips"><span class="chip">Strategist</span><span class="chip">Forward deployed engineer</span><span class="chip">Account exec</span></div></div>' +
+      '<div class="team"><div class="team-h"><b>Customer team</b><span>Readiness from Account setup</span></div><div class="team-chips">' + personChip("Sponsor", "sponsor") + personChip("Champion", "champion") + '<span class="chip">IT lead</span><span class="chip">Security</span></div></div>';
+    var arrow = '<div class="arrow" aria-hidden="true"><svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>';
     var flow =
-      '<div class="node"><div class="node-frame"><div class="node-box">' + icon("users") + 'Account team</div></div><div class="node-chips"><span class="chip">Strategist</span><span class="chip">FDE</span><span class="chip">Account exec</span></div></div>' +
-      '<div class="col"><div class="col-h"><span class="num">1</span>Plan</div>' + stageRow("handoff") + stageRow("kickoff") + "</div>" +
+      '<div class="col"><div class="col-h"><span class="num">1</span>Plan</div>' + stageRow("handoff") + stageRow("kickoff") + "</div>" + arrow +
       '<div class="col"><div class="col-h"><span class="num">2</span>Set up and govern</div>' + stageRow("setup") +
+        '<div class="col-sub">Set up in this stage</div>' +
         govRow("cloud", "Deployment", depName + " · " + depSub) +
         govRow("key", "Identity", "SSO · SCIM · roles", rlevel("sso")) +
         govRow("db", "Data", "Integrations · data tags", worst(rlevel("data"), rlevel("nonprod"))) +
         govRow("book", "Knowledge", "Organization and integration knowledge") +
         govRow("shield", "Code Security", "Blocking mode on by default") +
         govRow("wallet", "Spend", "Limits · alerts") +
-      "</div>" +
-      '<div class="col"><div class="col-h"><span class="num">3</span>Launch and grow</div>' + stageRow("first") + stageRow("adopt") + stageRow("value") + "</div>" +
-      '<div class="node"><div class="node-frame"><div class="node-box">' + icon("person") + 'Customer</div></div><div class="node-chips"><span class="chip"><span class="dot ' + rlevel("sponsor") + '"></span>Sponsor</span><span class="chip"><span class="dot ' + rlevel("champion") + '"></span>Champion</span></div></div>';
+      "</div>" + arrow +
+      '<div class="col"><div class="col-h"><span class="num">3</span>Launch and grow</div>' + stageRow("first") + stageRow("adopt") + stageRow("value") + "</div>";
     document.getElementById("ov-flow").innerHTML = flow;
     document.getElementById("ov-always").innerHTML =
       '<button type="button" class="chip" data-go="health">' + icon("pulse") + "Health and recovery</button>" +
