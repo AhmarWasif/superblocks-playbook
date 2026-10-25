@@ -316,7 +316,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     </div>
     <div class="acct" id="acct"></div>
     <div id="nav"></div>
-    <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. The Chime example uses public information only.</div>
+    <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. The SoFi example uses public information only.</div>
   </nav>
   <div class="scrim" id="scrim"></div>
 
@@ -368,7 +368,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <p>Answer these at handoff. Every customer gets the same stages, kickoff and weekly sponsor note; the answers change the work involved, not the level of attention.</p>
         </div>
       </div>
-      <div class="banner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>One example account is loaded: Chime, built from public information only. Switch accounts or add a new one at the top of the sidebar. Every change updates the overview, timeline and stages, and is saved in this browser only.</span></div>
+      <div class="banner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>One example account is loaded: SoFi, built from public information only. Switch accounts or add a new one at the top of the sidebar. Every change updates the overview, timeline and stages, and is saved in this browser only.</span></div>
       <form id="intake" novalidate>
         <div class="card">
           <div class="card-h"><h2>Account profile</h2><span class="sub">Shapes the setup work and timeline</span></div>
@@ -576,7 +576,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
         <ul class="items">
           <li><span><b>What it is.</b> One repeatable process for a new customer, from signed contract to renewal, that adapts to each account's setup and readiness.</span></li>
           <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
-          <li><span><b>Data.</b> The Chime example account uses only Chime's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or Chime data. The weekly sponsor note is a fictional sample.</span></li>
+          <li><span><b>Data.</b> The SoFi example account uses only SoFi's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or SoFi data. The weekly sponsor note is a fictional sample.</span></li>
           <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. Timelines are estimates, listed under Open questions.</span></li>
         </ul>
       </div>
@@ -840,25 +840,25 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
 
   var BRIEF_KEYS = ["company", "why", "people", "teams", "outcomes", "apps", "watch"];
   var SAMPLES = [
-    { id: "chime", v: 1, name: "Chime", sample: true,
+    { id: "sofi", v: 2, name: "SoFi", sample: true,
       inputs: { deploy: "hybrid", regulated: true, depts: "4+", builders: 40, start: "new", protos: true, claude: false,
         r: { sponsor: "ready", champion: "partial", sso: "ready", data: "partial", nonprod: "partial", usecases: "partial", appetite: "ready" } },
       brief: {
-        company: "Consumer fintech based in San Francisco, public on Nasdaq (CHYM) since June 2025. 10.4 million active members and $670M revenue in Q2 2026. About 1,500 employees at the end of 2025, before a 10% reduction in July 2026. Banking services come from partner banks The Bancorp Bank, N.A. and Stride Bank, N.A. Runs on AWS.",
-        why: "Guess to test at handoff: leadership wants leaner teams to do more with AI (CEO memo, July 2026), and operations teams wait on engineering for internal tools. Superblocks lets those teams build with AI inside IT's controls, which matters at a regulated company.",
-        people: "Sponsor and champion confirmed at handoff. Likely contacts: an executive sponsor in technology or operations, a champion in member operations, the IT and identity lead, security and compliance, and the AWS platform team for the Hybrid data plane.",
-        teams: "Wave 1: Member operations and Risk operations, about 40 builders. Wave 2: Finance, Compliance, People, and partner operations for Chime Enterprise.",
-        outcomes: "Hours back in member operations: time agents spend switching between tools to work one member case\nEngineering refocused: internal-tool requests taken off the engineering queue\nRisk reduced: spreadsheets holding member data retired, with every app behind SSO and audit logs",
-        apps: "Member operations: one member case view with account, transaction and support history (read-only to start)\nMember operations: dispute and chargeback tracker to replace a shared spreadsheet\nMember operations: QA scorecard for reviewing support conversations\nRisk operations: fraud alert review queue with approve and escalate actions, recorded in the audit log\nRisk operations: exception review for MyPay and Instant Loans\nRisk operations: account review log for compliance, replacing manual trackers",
-        watch: "Member financial data: start with read-only apps, and give anything that writes a non-production data tag\nBank partner oversight: compliance may need to show partners how tools that touch member data are controlled. Have the SOC 2 Type II report and the audit log story ready\nHybrid needs Chime's AWS platform team to deploy the data plane. Book them before kickoff\nData sits in AWS services such as DynamoDB and S3, which have native Superblocks integrations. Confirm the sources each starter app needs\nAfter the July 2026 reduction, position building as taking manual work off the people who stayed, and lead with tools teams ask for"
+        company: "Consumer fintech and national bank based in San Francisco, public on Nasdaq (SOFI). 15.8 million members and $1.2B net revenue in Q2 2026, across lending, banking and investing, plus the Galileo technology platform. Its bank, SoFi Bank, N.A., won national bank charter approval from the OCC in January 2022.",
+        why: "Guess to test at handoff: members grew 35% in a year, so operations teams across many products need internal tools faster than engineering can build them. Superblocks lets those teams build with AI inside IT's controls, which matters at a bank.",
+        people: "Sponsor and champion confirmed at handoff. Likely contacts: an executive sponsor in technology or operations, a champion in member services, the IT and identity lead, security, risk and compliance, and the cloud platform team for the Hybrid data plane.",
+        teams: "Wave 1: Member services and Risk operations, about 40 builders. Wave 2: Lending operations, Compliance, Finance and People.",
+        outcomes: "Hours back in member services: time agents spend switching between tools to work one member case\nEngineering refocused: internal-tool requests taken off the engineering queue\nRisk reduced: spreadsheets holding member data retired, with every app behind SSO and audit logs",
+        apps: "Member services: one member view across banking, lending and investing products (read-only to start)\nMember services: dispute and chargeback tracker to replace a shared spreadsheet\nMember services: QA scorecard for reviewing support conversations\nRisk operations: fraud alert review queue with approve and escalate actions, recorded in the audit log\nRisk operations: loan application exception review with identity and KYC results in one place\nRisk operations: AML case tracker for compliance, replacing manual trackers",
+        watch: "Member financial data: start with read-only apps, and give anything that writes a non-production data tag\nBank supervision: SoFi Bank is a national bank, so security and compliance will want evidence of how tools that touch member data are controlled. Have the SOC 2 Type II report and the audit log story ready\nHybrid needs SoFi's cloud platform team to deploy the data plane. Book them before kickoff\nMany business lines (lending, banking, investing, Galileo): agree which are in scope for wave 1 so the commitment isn't spread thin\nAnalytics data is reported to sit in Snowflake, which has a native Superblocks integration. Confirm the sources each starter app needs"
       },
-      note: "Example built only from Chime's public information. The profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or Chime data.",
+      note: "Example built only from SoFi's public information. SoFi's logo appears on Superblocks' customers page. The profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or SoFi data.",
       sources: [
-        ["Q2 2026 results (SEC filing)", "https://www.sec.gov/Archives/edgar/data/0001795586/000179558626000046/ex991q226.htm"],
-        ["10% workforce reduction, July 31, 2026 (Reuters via The Star)", "https://www.thestar.com.my/tech/tech-news/2026/07/31/chime-to-cut-10-of-total-workforce-or-about-140-jobs-source-says"],
-        ["Partner banks (Chime help center)", "https://help.chime.com/is-chime-a-bank-b88da701"],
-        ["Chime's move to AWS (AWS blog)", "https://aws.amazon.com/blogs/industries/the-great-migration-chimes-move-to-aws"],
-        ["Chime's streaming fraud platform on AWS (AWS blog)", "https://aws.amazon.com/blogs/big-data/how-chime-financial-uses-aws-to-build-a-serverless-stream-analytics-platform-and-defeat-fraudsters"],
+        ["Q2 2026 results (SEC filing)", "https://www.sec.gov/Archives/edgar/data/0001818874/000181887426000050/a2026q2earningsrelease.htm"],
+        ["OCC approval of SoFi Bank, N.A., January 2022", "https://occ.treas.gov/news-issuances/news-releases/2022/nr-occ-2022-4.html"],
+        ["SoFi's Snowflake migration (evolv Consulting case study)", "https://www.casestudies.com/company/evolv-consulting/case-study/sofi-strengthens-snowflake-migration-and-serves-52-million-members-with-evolv-consulting"],
+        ["Superblocks customers page", "https://www.superblocks.com/customers"],
+        ["Superblocks for financial services", "https://superblocks.com/industries/financial"],
         ["Superblocks integrations library", "https://docs.superblocks.com/integrations/integrations-library"]
       ] }
   ];
@@ -882,6 +882,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     });
     SAMPLES.slice().reverse().forEach(function (smp) { if (!accounts.some(function (a) { return a.id === smp.id; })) accounts.unshift(clone(smp)); });
     if (!accounts.some(function (a) { return a.id === currentAcct; })) currentAcct = accounts[0].id;
+    saveAccounts();
   }
   function saveAccounts() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ accounts: accounts, current: currentAcct })); } catch (e) {} }
   function acct() { return accounts.filter(function (a) { return a.id === currentAcct; })[0]; }
