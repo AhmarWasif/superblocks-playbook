@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="A draft customer deployment playbook for Superblocks by Sardar Ahmar Wasif.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231B1F24%27/%3E%3Cpath d=%27M10 16.5l4 4 8-9%27 stroke=%27white%27 stroke-width=%272.6%27 fill=%27none%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
 <title>Superblocks Deployment Playbook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -235,6 +236,48 @@ input[type="number"]:focus-visible { outline: 2px solid var(--dark); outline-off
 .qlist li::before { content: counter(q); width: 22px; height: 22px; border-radius: 6px; background: var(--panel); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; color: var(--ink-2); }
 a { color: var(--ink); text-underline-offset: 2px; }
 
+/* Account switcher */
+/* Account brief */
+.brief-form { padding: 14px 16px 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-weight: 500; font-size: 13.5px; }
+.field.wide { grid-column: 1 / -1; }
+textarea { font: inherit; font-size: 13px; line-height: 1.45; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+textarea:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.brief-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.brief-grid > div { min-width: 0; }
+.brief-grid > div + div { border-left: 1px solid var(--line); }
+.bsec { padding: 12px 16px; border-top: 1px solid var(--line); }
+.bsec:first-child { border-top: 0; }
+.bk { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+.bsec p { font-size: 13.5px; }
+.bsec ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+.brief-foot { padding: 12px 16px; border-top: 1px solid var(--line); background: #FAFBFC; border-radius: 0 0 11px 11px; font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.brief-foot a { color: var(--ink-2); }
+@media (max-width: 760px) {
+  .brief-form, .brief-grid { grid-template-columns: minmax(0, 1fr); }
+  .brief-grid > div + div { border-left: 0; border-top: 1px solid var(--line); }
+}
+.acct { position: relative; margin: 0 0 8px; }
+.acct-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--surface); cursor: pointer; text-align: left; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+.acct-btn:hover { border-color: var(--faint); }
+.acct-btn:focus-visible, .acct-opt:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.acct-btn .ic { color: var(--muted); }
+.acct-av { width: 26px; height: 26px; border-radius: 7px; background: var(--panel); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink-2); flex: none; }
+.acct-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.3; }
+.acct-name { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acct-sub { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acct-menu { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40; background: var(--surface); border: 1px solid var(--line-2); border-radius: 10px; box-shadow: 0 12px 28px rgba(16, 24, 40, 0.14); padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.acct-opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 8px; border: 0; background: none; border-radius: 7px; cursor: pointer; text-align: left; }
+.acct-opt:hover, .acct-opt[aria-current="true"] { background: var(--nav-active); }
+.acct-sep { height: 1px; background: var(--line); margin: 4px 2px; }
+.acct-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); padding: 6px 8px 4px; font-weight: 500; }
+input[type="text"] { font: inherit; padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--ink); width: 260px; max-width: 100%; }
+input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.btn-quiet { font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--surface); cursor: pointer; }
+.btn-quiet:hover { background: #FAFBFC; }
+.btn-quiet.danger { color: var(--risk); }
+
 /* Mobile */
 .scrim { display: none; }
 @media (max-width: 900px) {
@@ -271,8 +314,9 @@ a { color: var(--ink); text-underline-offset: 2px; }
         <div class="brand-sub">Draft for Superblocks</div>
       </div>
     </div>
+    <div class="acct" id="acct"></div>
     <div id="nav"></div>
-    <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. Sample data is fictional.</div>
+    <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. The Chime example uses public information only.</div>
   </nav>
   <div class="scrim" id="scrim"></div>
 
@@ -286,7 +330,7 @@ a { color: var(--ink); text-underline-offset: 2px; }
     <section class="page" id="page-overview" data-page="overview">
       <div class="ph">
         <div class="ph-text">
-          <h1>Your customer deployment</h1>
+          <h1 id="ov-title">Customer deployment</h1>
           <p>One process for every new customer, from signed contract to renewal. Set up the account and every stage adjusts.</p>
         </div>
         <span id="ov-status" class="pill ok">On track</span>
@@ -312,6 +356,7 @@ a { color: var(--ink); text-underline-offset: 2px; }
           <ul class="flags" id="flags"></ul>
         </div>
       </div>
+      <div class="card" id="ov-brief"></div>
     </section>
 
     <!-- Account setup -->
@@ -323,11 +368,15 @@ a { color: var(--ink); text-underline-offset: 2px; }
           <p>Answer these at handoff. Every customer gets the same stages, kickoff and weekly sponsor note; the answers change the work involved, not the level of attention.</p>
         </div>
       </div>
-      <div class="banner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>Filled in with a sample account. Change any answer and the overview, timeline and stages update.</span></div>
+      <div class="banner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>One example account is loaded: Chime, built from public information only. Switch accounts or add a new one at the top of the sidebar. Every change updates the overview, timeline and stages, and is saved in this browser only.</span></div>
       <form id="intake" novalidate>
         <div class="card">
           <div class="card-h"><h2>Account profile</h2><span class="sub">Shapes the setup work and timeline</span></div>
           <div>
+            <div class="srow">
+              <div><label class="s-label" for="acct-name">Account name</label><div class="s-hint">Shown in the account switcher at the top of the sidebar.</div></div>
+              <input type="text" id="acct-name" name="acct-name" maxlength="60" autocomplete="off">
+            </div>
             <div class="srow">
               <div><div class="s-label" id="deploy-l">Deployment model</div><div class="s-hint">Cloud: fully managed by Superblocks. Hybrid: production data and app execution stay in the customer's AWS, GCP or Azure, while the AI runs in Superblocks Cloud. Cloud-Prem: the whole platform, including the AI, runs in the customer's AWS.</div></div>
               <div class="seg" role="radiogroup" aria-labelledby="deploy-l">
@@ -382,7 +431,20 @@ a { color: var(--ink); text-underline-offset: 2px; }
           <div class="card-h"><h2>Readiness</h2><div class="prog-wrap"><div class="progress"><i id="prog-bar"></i></div><span id="prog-text"></span></div></div>
           <div id="readiness"></div>
         </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><h2>Account brief</h2><span class="sub">What the team needs to know, shown on the overview</span></div>
+          <div class="brief-form">
+            <div class="field"><label for="b-company">Company</label><span class="s-hint">Industry, size and anything that shapes the deployment.</span><textarea id="b-company" rows="4"></textarea></div>
+            <div class="field"><label for="b-why">Why they bought</label><span class="s-hint">From the handoff call. Mark guesses as guesses.</span><textarea id="b-why" rows="4"></textarea></div>
+            <div class="field"><label for="b-people">Sponsor and contacts</label><span class="s-hint">Who signs off, who champions it, and who unblocks setup.</span><textarea id="b-people" rows="3"></textarea></div>
+            <div class="field"><label for="b-teams">Departments and waves</label><span class="s-hint">Which teams start first and who follows.</span><textarea id="b-teams" rows="3"></textarea></div>
+            <div class="field wide"><label for="b-outcomes">Draft outcomes for kickoff</label><span class="s-hint">One per line. The sponsor confirms two at kickoff, each with a baseline.</span><textarea id="b-outcomes" rows="3"></textarea></div>
+            <div class="field wide"><label for="b-apps">Starter app ideas</label><span class="s-hint">One per line. Shown on the First apps live stage.</span><textarea id="b-apps" rows="6"></textarea></div>
+            <div class="field wide"><label for="b-watch">Watch-outs</label><span class="s-hint">One per line.</span><textarea id="b-watch" rows="5"></textarea></div>
+          </div>
+        </div>
       </form>
+      <div id="acct-actions"></div>
     </section>
 
     <!-- Stage (rendered) -->
@@ -514,7 +576,7 @@ a { color: var(--ink); text-underline-offset: 2px; }
         <ul class="items">
           <li><span><b>What it is.</b> One repeatable process for a new customer, from signed contract to renewal, that adapts to each account's setup and readiness.</span></li>
           <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
-          <li><span><b>Data.</b> Every account, name and number in the samples is fictional.</span></li>
+          <li><span><b>Data.</b> The Chime example account uses only Chime's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or Chime data. The weekly sponsor note is a fictional sample.</span></li>
           <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. Timelines are estimates, listed under Open questions.</span></li>
         </ul>
       </div>
@@ -749,7 +811,9 @@ a { color: var(--ink); text-underline-offset: 2px; }
     book: '<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',
     wallet: '<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/>',
     cloud: '<path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 11.6 3.3 3.3 0 0 0 7 18z"/>',
-    doc: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/>'
+    doc: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/>',
+    updown: '<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>'
   };
   function icon(n) { return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || "") + "</svg>"; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -771,7 +835,58 @@ a { color: var(--ink); text-underline-offset: 2px; }
   STAGE_IDS.forEach(function (id) { TITLES[id] = STAGE_NAV[id]; });
 
   var current = "overview";
+  var lastNav = "", lastSwitcher = "";
   var plan;
+
+  var BRIEF_KEYS = ["company", "why", "people", "teams", "outcomes", "apps", "watch"];
+  var SAMPLES = [
+    { id: "chime", v: 1, name: "Chime", sample: true,
+      inputs: { deploy: "hybrid", regulated: true, depts: "4+", builders: 40, start: "new", protos: true, claude: false,
+        r: { sponsor: "ready", champion: "partial", sso: "ready", data: "partial", nonprod: "partial", usecases: "partial", appetite: "ready" } },
+      brief: {
+        company: "Consumer fintech based in San Francisco, public on Nasdaq (CHYM) since June 2025. 10.4 million active members and $670M revenue in Q2 2026. About 1,500 employees at the end of 2025, before a 10% reduction in July 2026. Banking services come from partner banks The Bancorp Bank, N.A. and Stride Bank, N.A. Runs on AWS.",
+        why: "Guess to test at handoff: leadership wants leaner teams to do more with AI (CEO memo, July 2026), and operations teams wait on engineering for internal tools. Superblocks lets those teams build with AI inside IT's controls, which matters at a regulated company.",
+        people: "Sponsor and champion confirmed at handoff. Likely contacts: an executive sponsor in technology or operations, a champion in member operations, the IT and identity lead, security and compliance, and the AWS platform team for the Hybrid data plane.",
+        teams: "Wave 1: Member operations and Risk operations, about 40 builders. Wave 2: Finance, Compliance, People, and partner operations for Chime Enterprise.",
+        outcomes: "Hours back in member operations: time agents spend switching between tools to work one member case\nEngineering refocused: internal-tool requests taken off the engineering queue\nRisk reduced: spreadsheets holding member data retired, with every app behind SSO and audit logs",
+        apps: "Member operations: one member case view with account, transaction and support history (read-only to start)\nMember operations: dispute and chargeback tracker to replace a shared spreadsheet\nMember operations: QA scorecard for reviewing support conversations\nRisk operations: fraud alert review queue with approve and escalate actions, recorded in the audit log\nRisk operations: exception review for MyPay and Instant Loans\nRisk operations: account review log for compliance, replacing manual trackers",
+        watch: "Member financial data: start with read-only apps, and give anything that writes a non-production data tag\nBank partner oversight: compliance may need to show partners how tools that touch member data are controlled. Have the SOC 2 Type II report and the audit log story ready\nHybrid needs Chime's AWS platform team to deploy the data plane. Book them before kickoff\nData sits in AWS services such as DynamoDB and S3, which have native Superblocks integrations. Confirm the sources each starter app needs\nAfter the July 2026 reduction, position building as taking manual work off the people who stayed, and lead with tools teams ask for"
+      },
+      note: "Example built only from Chime's public information. The profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or Chime data.",
+      sources: [
+        ["Q2 2026 results (SEC filing)", "https://www.sec.gov/Archives/edgar/data/0001795586/000179558626000046/ex991q226.htm"],
+        ["10% workforce reduction, July 31, 2026 (Reuters via The Star)", "https://www.thestar.com.my/tech/tech-news/2026/07/31/chime-to-cut-10-of-total-workforce-or-about-140-jobs-source-says"],
+        ["Partner banks (Chime help center)", "https://help.chime.com/is-chime-a-bank-b88da701"],
+        ["Chime's move to AWS (AWS blog)", "https://aws.amazon.com/blogs/industries/the-great-migration-chimes-move-to-aws"],
+        ["Chime's streaming fraud platform on AWS (AWS blog)", "https://aws.amazon.com/blogs/big-data/how-chime-financial-uses-aws-to-build-a-serverless-stream-analytics-platform-and-defeat-fraudsters"],
+        ["Superblocks integrations library", "https://docs.superblocks.com/integrations/integrations-library"]
+      ] }
+  ];
+  var STORE_KEY = "deployment-playbook-accounts-v1";
+  var accounts, currentAcct, acctOpen = false;
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function sampleOf(id) { return SAMPLES.filter(function (x) { return x.id === id; })[0]; }
+  function lines(t) { return String(t || "").split("\n").map(function (x) { return x.trim(); }).filter(Boolean); }
+  function loadAccounts() {
+    accounts = clone(SAMPLES);
+    currentAcct = accounts[0].id;
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var d = raw ? JSON.parse(raw) : null;
+      if (d && Array.isArray(d.accounts) && d.accounts.length) { accounts = d.accounts; currentAcct = d.current; }
+    } catch (e) {}
+    // Keep sample accounts in step with the latest version of the page
+    accounts = accounts.filter(function (a) { return !a.sample || sampleOf(a.id); }).map(function (a) {
+      var smp = sampleOf(a.id);
+      return smp && a.v !== smp.v ? clone(smp) : a;
+    });
+    SAMPLES.slice().reverse().forEach(function (smp) { if (!accounts.some(function (a) { return a.id === smp.id; })) accounts.unshift(clone(smp)); });
+    if (!accounts.some(function (a) { return a.id === currentAcct; })) currentAcct = accounts[0].id;
+  }
+  function saveAccounts() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ accounts: accounts, current: currentAcct })); } catch (e) {} }
+  function acct() { return accounts.filter(function (a) { return a.id === currentAcct; })[0]; }
+  function initials(n) { return String(n).split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join("") || "?"; }
+  function lvlName(l) { return l === "ok" ? "On track" : l === "warn" ? "Watch" : "At risk"; }
 
   // Readiness rows
   var readinessEl = document.getElementById("readiness");
@@ -795,6 +910,77 @@ a { color: var(--ink); text-underline-offset: 2px; }
     READINESS.forEach(function (r) { input.r[r.id] = val(r.id); });
     return input;
   }
+  function setRadio(name, v) { var el = document.querySelector('input[name="' + name + '"][value="' + v + '"]'); if (el) el.checked = true; }
+  function writeInputs(a) {
+    var i = a.inputs;
+    document.getElementById("acct-name").value = a.name;
+    setRadio("deploy", i.deploy);
+    setRadio("regulated", i.regulated ? "yes" : "no");
+    setRadio("depts", i.depts);
+    document.getElementById("builders").value = i.builders;
+    setRadio("start", i.start);
+    setRadio("protos", i.protos ? "yes" : "no");
+    setRadio("claude", i.claude ? "yes" : "no");
+    READINESS.forEach(function (r) { setRadio(r.id, (i.r && i.r[r.id]) || "partial"); });
+    BRIEF_KEYS.forEach(function (k) { document.getElementById("b-" + k).value = (a.brief && a.brief[k]) || ""; });
+    fitBrief();
+  }
+  // Grow each brief box to fit its text. Only works while the account page is visible.
+  function fitBrief() {
+    if (current !== "account") return;
+    BRIEF_KEYS.forEach(function (k) {
+      var el = document.getElementById("b-" + k);
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + 2 + "px";
+    });
+  }
+  function renderSwitcher() {
+    var a = acct();
+    var html = '<button type="button" class="acct-btn" id="acct-btn" aria-haspopup="true" aria-expanded="' + acctOpen + '"><span class="acct-av">' + esc(initials(a.name)) + '</span><span class="acct-meta"><span class="acct-name">' + esc(a.name) + '</span><span class="acct-sub">' + (a.sample ? "Example account" : "Your account") + " · " + lvlName(plan.overall) + "</span></span>" + icon("updown") + "</button>";
+    if (acctOpen) {
+      html += '<div class="acct-menu" role="menu" aria-label="Accounts"><div class="acct-label">Accounts</div>' + accounts.map(function (x) {
+        var l = computePlan(x.inputs).overall;
+        return '<button type="button" class="acct-opt" role="menuitem" data-acct="' + esc(x.id) + '"' + (x.id === currentAcct ? ' aria-current="true"' : "") + '><span class="acct-av">' + esc(initials(x.name)) + '</span><span class="acct-meta"><span class="acct-name">' + esc(x.name) + '</span><span class="acct-sub">' + (x.sample ? "Example" : "Yours") + " · " + lvlName(l) + '</span></span><span class="dot ' + l + '"></span></button>';
+      }).join("") + '<div class="acct-sep"></div><button type="button" class="acct-opt" role="menuitem" data-acct-new="1"><span class="acct-av">' + icon("plus") + '</span><span class="acct-meta"><span class="acct-name">New account</span><span class="acct-sub">Saved in this browser only</span></span></button></div>';
+    }
+    if (html === lastSwitcher) return;
+    lastSwitcher = html;
+    document.getElementById("acct").innerHTML = html;
+  }
+  function switchAcct(id) {
+    currentAcct = id;
+    acctOpen = false;
+    writeInputs(acct());
+    update();
+    show(current, false);
+  }
+  function newAcct() {
+    var n = accounts.filter(function (a) { return !a.sample; }).length + 1;
+    var a = { id: "a" + Date.now(), name: "New account " + n, sample: false,
+      inputs: { deploy: "cloud", regulated: false, depts: "1", builders: 10, start: "new", protos: false, claude: false, r: {} }, brief: {} };
+    READINESS.forEach(function (r) { a.inputs.r[r.id] = "partial"; });
+    accounts.push(a);
+    switchAcct(a.id);
+    show("account", true);
+    var nm = document.getElementById("acct-name");
+    try { nm.focus(); nm.select(); } catch (e) {}
+  }
+  function acctAction(kind) {
+    var a = acct();
+    if (kind === "reset" && a.sample) {
+      var orig = sampleOf(a.id);
+      if (orig) { a.name = orig.name; a.inputs = clone(orig.inputs); a.brief = clone(orig.brief); }
+      writeInputs(a);
+      update();
+    }
+    if (kind === "delete" && !a.sample) {
+      accounts = accounts.filter(function (x) { return x.id !== a.id; });
+      currentAcct = accounts[0].id;
+      writeInputs(acct());
+      update();
+      show("overview", true);
+    }
+  }
   function rlevel(id) { var v = val(id); return v === "ready" ? "ok" : v === "partial" ? "warn" : "risk"; }
   function worst(a, b) { var o = ["ok", "warn", "risk"]; return o[Math.max(o.indexOf(a), o.indexOf(b))]; }
 
@@ -812,6 +998,9 @@ a { color: var(--ink); text-underline-offset: 2px; }
         html += '<button type="button" class="nav-item" data-go="' + it.id + '"' + (it.id === current ? ' aria-current="page"' : "") + ">" + icon(ic) + '<span class="nav-label">' + esc(label) + "</span>" + badge + "</button>";
       });
     });
+    // Skip identical re-renders so a click that blurs a form field still lands on its nav item
+    if (html === lastNav) return;
+    lastNav = html;
     document.getElementById("nav").innerHTML = html;
   }
 
@@ -872,6 +1061,32 @@ a { color: var(--ink); text-underline-offset: 2px; }
     document.getElementById("flags").innerHTML = plan.flags.length
       ? plan.flags.map(function (x) { return '<li class="flag ' + x.lvl + '"><div><strong>' + esc(x.t) + "</strong><span>" + esc(x.d) + "</span></div></li>"; }).join("")
       : '<li class="empty">Nothing flagged. Run the standard plan.</li>';
+    renderBrief();
+  }
+
+  function renderBrief() {
+    var a = acct(), b = a.brief || {}, smp = a.sample ? sampleOf(a.id) : null;
+    function sec(k, label, isList) {
+      if (isList) {
+        var v = lines(b[k]);
+        return v.length ? '<div class="bsec"><div class="bk">' + esc(label) + "</div><ul>" + v.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" : "";
+      }
+      var t = String(b[k] || "").trim();
+      return t ? '<div class="bsec"><div class="bk">' + esc(label) + "</div><p>" + esc(t) + "</p></div>" : "";
+    }
+    var left = sec("company", "Company") + sec("why", "Why they bought") + sec("people", "Sponsor and contacts") + sec("teams", "Departments and waves");
+    var right = sec("outcomes", "Draft outcomes for kickoff", true) + sec("apps", "Starter app ideas", true) + sec("watch", "Watch-outs", true);
+    var body = left || right
+      ? '<div class="brief-grid"><div>' + left + "</div><div>" + right + "</div></div>"
+      : '<div class="card-b"><p class="hint">No brief yet. Add one under Account setup.</p></div>';
+    var foot = smp ? '<div class="brief-foot"><span>' + esc(smp.note) + "</span><span>Public sources: " + smp.sources.map(function (x) { return '<a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + "</a>"; }).join(" · ") + "</span></div>" : "";
+    document.getElementById("ov-brief").innerHTML = '<div class="card-h"><h2>Account brief</h2><button type="button" class="chip" data-go="account">Edit brief</button></div>' + body + foot;
+  }
+  function briefCard(id) {
+    var b = acct().brief || {};
+    var src = id === "kickoff" ? ["Draft outcomes for this account", lines(b.outcomes)] : id === "first" ? ["Starter app ideas for this account", lines(b.apps)] : null;
+    if (!src || !src[1].length) return "";
+    return '<div class="card"><div class="card-h"><h2>' + esc(src[0]) + '</h2><button type="button" class="chip" data-go="account">Edit brief</button></div>' + numbered(src[1]) + "</div>";
   }
 
   function list(items, cls, ic) {
@@ -899,6 +1114,7 @@ a { color: var(--ink); text-underline-offset: 2px; }
         ? '<li>' + icon("doc") + '<span><button type="button" class="chip" data-go="note">Weekly sponsor note</button></span></li>'
         : "<li>" + icon("doc") + "<span>" + esc(x) + "</span></li>";
     }).join("") + "</ul>";
+    html += briefCard(id);
     html += '<div class="grid2">' +
       '<div class="card"><div class="card-h"><h2>Done when</h2></div>' + list(st.exit, "check", "check") + "</div>" +
       '<div class="card"><div class="card-h"><h2>Key activities</h2></div>' + numbered(st.activities) + "</div>" +
@@ -914,6 +1130,11 @@ a { color: var(--ink); text-underline-offset: 2px; }
   }
 
   function renderAccountProgress() {
+    var a = acct();
+    document.getElementById("ov-title").textContent = a.name;
+    document.getElementById("acct-actions").innerHTML = a.sample
+      ? '<button type="button" class="btn-quiet" data-acct-action="reset">Reset this example account</button>'
+      : '<button type="button" class="btn-quiet danger" data-acct-action="delete">Delete this account</button>';
     var pct = Math.round(plan.ready / READINESS.length * 100);
     document.getElementById("prog-bar").style.width = pct + "%";
     document.getElementById("prog-text").textContent = plan.ready + " of " + READINESS.length + " ready";
@@ -936,6 +1157,7 @@ a { color: var(--ink); text-underline-offset: 2px; }
     });
     if (isStage) renderStage(id);
     if (id === "overview") renderOverview();
+    if (id === "account") fitBrief();
     renderNav();
     document.getElementById("topbar-title").textContent = TITLES[id];
     setMenu(false);
@@ -947,6 +1169,15 @@ a { color: var(--ink); text-underline-offset: 2px; }
 
   function update() {
     plan = computePlan(readInput());
+    var a = acct();
+    a.inputs = readInput();
+    delete a.inputs.name;
+    var nm = document.getElementById("acct-name").value.trim();
+    a.name = nm || "Untitled account";
+    a.brief = {};
+    BRIEF_KEYS.forEach(function (k) { a.brief[k] = document.getElementById("b-" + k).value; });
+    saveAccounts();
+    renderSwitcher();
     renderNav();
     renderOverview();
     renderAccountProgress();
@@ -954,6 +1185,13 @@ a { color: var(--ink); text-underline-offset: 2px; }
   }
 
   document.addEventListener("click", function (e) {
+    if (e.target.closest("#acct-btn")) { acctOpen = !acctOpen; renderSwitcher(); return; }
+    var opt = e.target.closest("[data-acct]");
+    if (opt) { switchAcct(opt.getAttribute("data-acct")); return; }
+    if (e.target.closest("[data-acct-new]")) { newAcct(); return; }
+    var act = e.target.closest("[data-acct-action]");
+    if (act) { acctAction(act.getAttribute("data-acct-action")); return; }
+    if (acctOpen && !e.target.closest("#acct")) { acctOpen = false; renderSwitcher(); }
     var t = e.target.closest("[data-go]");
     if (!t) return;
     e.preventDefault();
@@ -961,13 +1199,16 @@ a { color: var(--ink); text-underline-offset: 2px; }
   });
   menuBtn.addEventListener("click", function () { setMenu(!sidebar.classList.contains("open")); });
   scrim.addEventListener("click", function () { setMenu(false); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { setMenu(false); if (acctOpen) { acctOpen = false; renderSwitcher(); } } });
   var form = document.getElementById("intake");
-  form.addEventListener("input", update);
-  form.addEventListener("change", update);
+  form.addEventListener("input", function (e) { update(); if (e.target.tagName === "TEXTAREA") fitBrief(); });
+  form.addEventListener("change", function (e) { if (e.target.type === "radio") update(); });
   form.addEventListener("submit", function (e) { e.preventDefault(); });
 
+  loadAccounts();
+  writeInputs(acct());
   plan = computePlan(readInput());
+  renderSwitcher();
   var start = (location.hash || "").replace("#", "");
   show(TITLES[start] ? start : "overview", false);
   renderAccountProgress();
