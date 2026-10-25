@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A draft customer deployment playbook for Superblocks by Sardar Ahmar Wasif.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231B1F24%27/%3E%3Cpath d=%27M10 16.5l4 4 8-9%27 stroke=%27white%27 stroke-width=%272.6%27 fill=%27none%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<title>Superblocks Deployment Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: an admin console. Fixed left sidebar of sections; one section shows at a time in the main pane. Light theme only, by design, to match the console it is modeled on. */
+:root {
+  --bg: #F7F8FA;
+  --panel: #F0F2F5;
+  --surface: #FFFFFF;
+  --ink: #16191D;
+  --ink-2: #3B4149;
+  --muted: #6B737D;
+  --faint: #9AA1A9;
+  --line: #E4E7EB;
+  --line-2: #D5D9DF;
+  --nav-active: #ECEEF2;
+  --dark: #1B1F24;
+  --on-dark: #FFFFFF;
+  --ok: #1E8449;
+  --ok-soft: #E4F3EA;
+  --warn: #A86300;
+  --warn-soft: #FCF0DA;
+  --warn-line: #F1DAB0;
+  --risk: #C23B3B;
+  --risk-soft: #FBE7E7;
+  --info: #3D5A80;
+  --info-soft: #E9EEF5;
+  --font: "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+.ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Shell */
+.app { display: grid; grid-template-columns: 272px minmax(0, 1fr); min-height: 100%; }
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--bg);
+  border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px;
+  padding: 16px 12px 20px max(12px, env(safe-area-inset-left, 0px));
+}
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 14px; }
+.brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--dark); color: var(--on-dark); display: grid; place-items: center; flex: none; }
+.brand-mark .ic { width: 17px; height: 17px; }
+.brand-name { font-weight: 600; font-size: 14px; line-height: 1.2; }
+.brand-sub { font-size: 12px; color: var(--muted); }
+.nav-group { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); padding: 16px 10px 6px; font-weight: 500; }
+.nav-item {
+  position: relative; display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px;
+  border: 0; border-radius: 7px; background: none; color: var(--ink-2); font-size: 13.5px; text-align: left; cursor: pointer;
+}
+.nav-item .ic { color: var(--muted); }
+.nav-item:hover { background: var(--nav-active); }
+.nav-item[aria-current="page"] { background: var(--nav-active); color: var(--ink); font-weight: 500; }
+.nav-item[aria-current="page"] .ic { color: var(--ink); }
+.nav-item[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 7px; bottom: 7px; width: 2px; border-radius: 2px; background: var(--dark); }
+.nav-item:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-badge { margin-left: auto; font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--panel); color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 500; flex: none; }
+.nav-badge.add { background: var(--warn-soft); color: var(--warn); }
+.side-foot { margin-top: auto; padding: 18px 10px 0; font-size: 11.5px; color: var(--faint); line-height: 1.45; }
+
+.main { min-width: 0; padding: 28px max(16px, env(safe-area-inset-right, 0px)) 72px 40px; }
+.topbar { display: none; }
+.page { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.ph { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; }
+.ph-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.crumb { font-size: 12px; color: var(--muted); }
+.ph h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.ph p { color: var(--muted); max-width: 70ch; }
+
+/* Pills, chips */
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.risk { background: var(--risk-soft); color: var(--risk); }
+.pill.plain { background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); }
+.pill.plain::before { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 12px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+button.chip { cursor: pointer; }
+button.chip:hover { border-color: var(--line-2); background: #FAFBFC; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); flex: none; }
+.dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.risk { background: var(--risk); }
+.stat-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Factory panel (overview) */
+.factory {
+  background: linear-gradient(180deg, #F4F5F7 0%, #ECEEF1 100%); border: 1px solid var(--line-2); border-radius: 14px;
+  padding: 24px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), inset 0 1px 0 #FFFFFF; display: flex; flex-direction: column; gap: 22px;
+}
+.flow { display: grid; grid-template-columns: 112px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 112px; gap: 26px; align-items: start; }
+.flow > * { position: relative; min-width: 0; }
+.flow > *:not(:last-child)::after {
+  content: ""; position: absolute; top: 50%; right: -24px; width: 22px; border-top: 1.5px dashed var(--line-2);
+}
+.node { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.node-frame { width: 100%; padding: 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); }
+.node-box { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 14px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05); }
+.node-box .ic { width: 18px; height: 18px; color: var(--muted); }
+.node-chips { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.col { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+.col-h { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13.5px; padding: 2px 4px 6px; }
+.num { width: 19px; height: 19px; border-radius: 5px; background: var(--dark); color: var(--on-dark); font-size: 11px; font-weight: 600; display: grid; place-items: center; flex: none; }
+.row {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); text-align: left; cursor: pointer;
+}
+.row:hover { border-color: var(--line-2); background: #FAFBFC; }
+.row:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.row-icon { width: 30px; height: 30px; border-radius: 7px; background: var(--panel); display: grid; place-items: center; color: var(--ink-2); flex: none; }
+.row-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.row-title { font-weight: 600; font-size: 13px; line-height: 1.3; }
+.row-sub { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.always { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.always-h { font-weight: 600; font-size: 13.5px; }
+.chip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+@media (max-width: 1060px) {
+  .flow { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .flow > *:not(:last-child)::after { top: auto; bottom: -20px; right: auto; left: 50%; width: 0; height: 18px; border-top: 0; border-left: 1.5px dashed var(--line-2); }
+  .node { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+  .node-frame { width: auto; }
+  .node-chips { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; min-width: 0; }
+.card-h { padding: 13px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.card-h h2 { font-size: 14px; font-weight: 600; }
+.card-h .sub { font-size: 12.5px; color: var(--muted); }
+.card-b { padding: 14px 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grid-ov { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .grid2, .grid-ov { grid-template-columns: minmax(0, 1fr); } }
+.items { list-style: none; margin: 0; padding: 0; }
+.items li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 16px; border-top: 1px solid var(--line); }
+.items li:first-child { border-top: 0; }
+.items li .ic { margin-top: 2px; color: var(--muted); }
+.items.check li .ic { color: var(--ok); }
+.items.flagged li .ic { color: var(--risk); }
+.items .n { width: 20px; height: 20px; border-radius: 6px; background: var(--panel); color: var(--ink-2); font-size: 11px; font-weight: 600; display: grid; place-items: center; flex: none; margin-top: 1px; }
+.owner-role { flex: none; width: 96px; font-size: 12px; font-weight: 600; color: var(--ink-2); padding-top: 1px; }
+.callout { background: var(--warn-soft); border: 1px solid var(--warn-line); border-radius: 11px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.callout h2 { font-size: 14px; font-weight: 600; color: var(--warn); display: flex; align-items: center; gap: 8px; }
+.callout ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+.callout .why { font-size: 12px; color: var(--muted); }
+.goal { font-size: 15px; color: var(--ink-2); max-width: 72ch; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 6px; }
+.tl-row { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 12px; align-items: center; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; border-radius: 6px; }
+.tl-row:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+.tl-row:hover .tl-name { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.tl-name { font-size: 12.5px; font-weight: 500; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-track { position: relative; height: 24px; background: var(--panel); border-radius: 5px; }
+.tl-bar { position: absolute; top: 3px; bottom: 3px; border-radius: 4px; background: #2C3239; color: var(--on-dark); font-size: 11px; font-weight: 500; display: flex; align-items: center; padding: 0 6px; white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; }
+.tl-bar.ongoing { background: repeating-linear-gradient(135deg, #2C3239 0 7px, #4A525C 7px 14px); }
+.tl-bar.extended { box-shadow: inset 0 -3px 0 var(--warn); }
+.tl-axis { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 12px; }
+.tl-ticks { position: relative; height: 16px; }
+.tl-ticks span { position: absolute; transform: translateX(-50%); font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.tl-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+.tl-legend i { display: inline-block; width: 16px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: middle; background: #2C3239; }
+.tl-legend i.ext { box-shadow: inset 0 -3px 0 var(--warn); }
+.tl-legend i.on { background: repeating-linear-gradient(135deg, #2C3239 0 4px, #4A525C 4px 8px); }
+@media (max-width: 560px) { .tl-row, .tl-axis { grid-template-columns: minmax(0, 1fr); gap: 3px; } .tl-axis > span:first-child { display: none; } }
+
+/* Flags */
+.flags { list-style: none; margin: 0; padding: 0; }
+.flag { display: grid; grid-template-columns: 4px minmax(0, 1fr); gap: 12px; padding: 11px 16px; border-top: 1px solid var(--line); }
+.flag:first-child { border-top: 0; }
+.flag::before { content: ""; border-radius: 2px; background: var(--faint); }
+.flag.risk::before { background: var(--risk); } .flag.warn::before { background: var(--warn); } .flag.info::before { background: var(--info); }
+.flag strong { display: block; font-weight: 600; font-size: 13px; }
+.flag span { font-size: 12.5px; color: var(--muted); }
+.empty { padding: 12px 16px; color: var(--muted); }
+
+/* Settings rows */
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 24px; align-items: center; padding: 14px 16px; border-top: 1px solid var(--line); }
+.srow:first-child { border-top: 0; }
+.s-label { font-weight: 500; font-size: 13.5px; }
+.s-hint { font-size: 12.5px; color: var(--muted); max-width: 60ch; }
+@media (max-width: 700px) { .srow { grid-template-columns: minmax(0, 1fr); } }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; background: var(--surface); max-width: 100%; position: relative; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { padding: 6px 12px; font-size: 13px; color: var(--ink-2); border-right: 1px solid var(--line); cursor: pointer; white-space: nowrap; }
+.seg label:last-of-type { border-right: 0; }
+.seg label:hover { background: #FAFBFC; }
+.seg input:checked + label { background: var(--dark); color: var(--on-dark); font-weight: 500; }
+.seg input:focus-visible + label { outline: 2px solid var(--dark); outline-offset: -3px; }
+.seg.tri input[value="ready"]:checked + label { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.seg.tri input[value="partial"]:checked + label { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+.seg.tri input[value="not"]:checked + label { background: var(--risk-soft); color: var(--risk); font-weight: 600; }
+input[type="number"] { font: inherit; padding: 6px 10px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); color: var(--ink); width: 110px; font-variant-numeric: tabular-nums; }
+input[type="number"]:focus-visible { outline: 2px solid var(--dark); outline-offset: 1px; }
+.progress { width: 140px; height: 6px; background: var(--panel); border-radius: 999px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--dark); border-radius: 999px; transition: width 0.2s ease; }
+.prog-wrap { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--info-soft); border-radius: 10px; color: var(--info); font-size: 13px; }
+.banner .ic { margin-top: 2px; }
+
+/* Sponsor note */
+.note-meta { font-size: 12px; color: var(--muted); }
+.kv { width: 100%; border-collapse: collapse; font-size: 13px; }
+.kv th, .kv td { text-align: left; padding: 9px 16px; border-top: 1px solid var(--line); vertical-align: top; }
+.kv th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; border-top: 0; background: #FAFBFC; }
+.kv td.n { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.tablewrap { overflow-x: auto; }
+.value-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 760px) { .value-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.vcard { border: 1px solid var(--line); border-radius: 9px; padding: 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vcard .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 500; }
+.vcard .v { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.vcard .d { font-size: 12px; color: var(--muted); }
+.vcard.new { background: var(--ok-soft); border-color: transparent; }
+.vcard.new .k { color: var(--ok); }
+.hint { font-size: 12.5px; color: var(--muted); }
+.qlist { margin: 0; padding: 0; list-style: none; counter-reset: q; }
+.qlist li { counter-increment: q; display: flex; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.qlist li:first-child { border-top: 0; }
+.qlist li::before { content: counter(q); width: 22px; height: 22px; border-radius: 6px; background: var(--panel); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; color: var(--ink-2); }
+a { color: var(--ink); text-underline-offset: 2px; }
+
+/* Mobile */
+.scrim { display: none; }
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: min(290px, 86vw); height: 100%; z-index: 30; background: var(--surface);
+    transform: translateX(-102%); transition: transform 0.2s ease; box-shadow: 0 10px 30px rgba(16, 24, 40, 0.18);
+    padding-top: max(16px, env(safe-area-inset-top, 0px));
+  }
+  .sidebar.open { transform: none; }
+  .scrim.open { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(16, 24, 40, 0.3); }
+  .main { padding: 0 max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+  .topbar {
+    display: flex; align-items: center; gap: 10px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg);
+    margin: 0 calc(-1 * max(16px, env(safe-area-inset-right, 0px))) 16px calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line);
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--bg); }
+  .menu-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 13px; font-weight: 500; }
+  .topbar-title { font-weight: 600; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) { .sidebar, .progress i { transition: none; } }
+</style>
+</head>
+<body>
+
+
+<div class="app">
+  <nav class="sidebar" id="sidebar" aria-label="Playbook sections">
+    <div class="brand">
+      <div class="brand-mark"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8.5 13l2 2 4-4.5"/></svg></div>
+      <div>
+        <div class="brand-name">Deployment Playbook</div>
+        <div class="brand-sub">Draft for Superblocks</div>
+      </div>
+    </div>
+    <div id="nav"></div>
+    <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. Sample data is fictional.</div>
+  </nav>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main" id="main">
+    <div class="topbar">
+      <button type="button" class="menu-btn" id="menu-btn" aria-controls="sidebar" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Sections</button>
+      <span class="topbar-title" id="topbar-title">Overview</span>
+    </div>
+
+    <!-- Overview -->
+    <section class="page" id="page-overview" data-page="overview">
+      <div class="ph">
+        <div class="ph-text">
+          <h1>Your customer deployment</h1>
+          <p>One process for every new customer, from signed contract to renewal. Set up the account and every stage adjusts.</p>
+        </div>
+        <span id="ov-status" class="pill ok">On track</span>
+      </div>
+      <div class="stat-row" id="ov-stats"></div>
+      <div class="factory">
+        <div class="flow" id="ov-flow"></div>
+        <div class="always">
+          <div class="always-h">Always on</div>
+          <div class="chip-row" id="ov-always"></div>
+        </div>
+      </div>
+      <div class="grid-ov">
+        <div class="card">
+          <div class="card-h"><h2>Timeline</h2><span class="sub" id="tl-sub"></span></div>
+          <div class="card-b">
+            <div class="timeline" id="timeline"></div>
+            <div class="tl-legend"><span><i></i>Standard length</span><span><i class="ext"></i>Extended for this account</span><span><i class="on"></i>Ongoing</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Work on these first</h2><button type="button" class="chip" data-go="account">Edit account</button></div>
+          <ul class="flags" id="flags"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Account setup -->
+    <section class="page" id="page-account" data-page="account" hidden>
+      <div class="ph">
+        <div class="ph-text">
+          <span class="crumb">Setup</span>
+          <h1>Account setup</h1>
+          <p>Answer these at handoff. Every customer gets the same stages, kickoff and weekly sponsor note; the answers change the work involved, not the level of attention.</p>
+        </div>
+      </div>
+      <div class="banner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>Filled in with a sample account. Change any answer and the overview, timeline and stages update.</span></div>
+      <form id="intake" novalidate>
+        <div class="card">
+          <div class="card-h"><h2>Account profile</h2><span class="sub">Shapes the setup work and timeline</span></div>
+          <div>
+            <div class="srow">
+              <div><div class="s-label" id="deploy-l">Deployment model</div><div class="s-hint">Cloud: fully managed by Superblocks. Hybrid: production data and app execution stay in the customer's AWS, GCP or Azure, while the AI runs in Superblocks Cloud. Cloud-Prem: the whole platform, including the AI, runs in the customer's AWS.</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="deploy-l">
+                <input type="radio" name="deploy" id="deploy-cloud" value="cloud"><label for="deploy-cloud">Cloud</label>
+                <input type="radio" name="deploy" id="deploy-hybrid" value="hybrid" checked><label for="deploy-hybrid">Hybrid</label>
+                <input type="radio" name="deploy" id="deploy-prem" value="prem"><label for="deploy-prem">Cloud-Prem</label>
+              </div>
+            </div>
+            <div class="srow">
+              <div><div class="s-label" id="reg-l">Regulated industry</div><div class="s-hint">Financial services, healthcare, insurance, public sector.</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="reg-l">
+                <input type="radio" name="regulated" id="reg-no" value="no" checked><label for="reg-no">No</label>
+                <input type="radio" name="regulated" id="reg-yes" value="yes"><label for="reg-yes">Yes</label>
+              </div>
+            </div>
+            <div class="srow">
+              <div><div class="s-label" id="dept-l">Departments in scope at launch</div><div class="s-hint">Four or more are rolled out in two waves.</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="dept-l">
+                <input type="radio" name="depts" id="dept-1" value="1"><label for="dept-1">1</label>
+                <input type="radio" name="depts" id="dept-2" value="2-3" checked><label for="dept-2">2–3</label>
+                <input type="radio" name="depts" id="dept-4" value="4+"><label for="dept-4">4+</label>
+              </div>
+            </div>
+            <div class="srow">
+              <div><label class="s-label" for="builders">Builders in the first wave</label><div class="s-hint">People who will build at launch. Enterprise plans include unlimited builders, so this only sets training: cohorts of about 10.</div></div>
+              <input type="number" id="builders" name="builders" min="1" max="2000" step="1" value="25" inputmode="numeric">
+            </div>
+            <div class="srow">
+              <div><div class="s-label" id="start-l">Starting point</div><div class="s-hint">Existing customers keep their Low-Code apps running and build new apps with Clark.</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="start-l">
+                <input type="radio" name="start" id="start-new" value="new" checked><label for="start-new">New to Superblocks</label>
+                <input type="radio" name="start" id="start-lc" value="lowcode"><label for="start-lc">Moving from Low-Code</label>
+              </div>
+            </div>
+            <div class="srow">
+              <div><div class="s-label" id="proto-l">Prototypes already built in other AI tools</div><div class="s-hint">For example in Lovable, Replit, v0, Claude or ChatGPT. Clark can import them onto governed integrations.</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="proto-l">
+                <input type="radio" name="protos" id="proto-no" value="no"><label for="proto-no">No</label>
+                <input type="radio" name="protos" id="proto-yes" value="yes" checked><label for="proto-yes">Yes</label>
+              </div>
+            </div>
+            <div class="srow">
+              <div><div class="s-label" id="claude-l">Company uses Claude Team or Enterprise</div><div class="s-hint">If yes, builders can build and publish from Claude with Superblocks in Claude (beta).</div></div>
+              <div class="seg" role="radiogroup" aria-labelledby="claude-l">
+                <input type="radio" name="claude" id="claude-no" value="no" checked><label for="claude-no">No</label>
+                <input type="radio" name="claude" id="claude-yes" value="yes"><label for="claude-yes">Yes</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><h2>Readiness</h2><div class="prog-wrap"><div class="progress"><i id="prog-bar"></i></div><span id="prog-text"></span></div></div>
+          <div id="readiness"></div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Stage (rendered) -->
+    <section class="page" id="page-stage" data-page="stage" hidden></section>
+
+    <!-- Health and recovery -->
+    <section class="page" id="page-health" data-page="health" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Always on</span><h1>Health and recovery</h1><p>Watch every account weekly. When a trigger fires, run the first-week recovery.</p></div></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>Start a recovery when</h2></div>
+          <ul class="items flagged">
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Weekly active builders fall 30% or more for two weeks in a row</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>No new app reaches production in three weeks</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>The sponsor or champion changes roles or leaves</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>More than a quarter of trained builders have stalled</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Usage is pacing well below the contract commitment</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Builders hit their spend limit, which pauses Clark until an admin raises it</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Publishes keep getting blocked by Code Security findings</span></li>
+          </ul>
+          <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Where to look: Plan &amp; Usage (usage by user, app and day, and published-app views), audit logs, or the Admin MCP.</p></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>First week of a recovery</h2></div>
+          <ul class="items">
+            <li><span class="n">1</span><span><b>Day 1.</b> Pull usage data: who stopped building, which apps lost users, and when it started.</span></li>
+            <li><span class="n">2</span><span><b>Days 2–3.</b> Talk to the champion and two or three stalled builders. Ask what got in the way, not whether they like the product.</span></li>
+            <li><span class="n">3</span><span><b>Day 3.</b> Name the cause: data access, no clear use case, sponsor change, spend limits, blocked publishes, a product gap, or a team change.</span></li>
+            <li><span class="n">4</span><span><b>Day 4.</b> Pick two quick wins, each with a named owner and a date.</span></li>
+            <li><span class="n">5</span><span><b>Day 5.</b> Send the sponsor a recovery note with the numbers, the cause and a 30-day plan.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Requests and feedback -->
+    <section class="page" id="page-requests" data-page="requests" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Always on</span><h1>Requests and feedback</h1><p>Every customer request is logged once with what they asked for, the outcome behind it, how many customers need it, and whether a workaround exists. Then it goes to one of three places.</p></div></div>
+      <div class="card">
+        <ul class="items">
+          <li><span class="n">1</span><span><b>Works today.</b> The strategist shows them how, and adds it to the training material if others will ask too.</span></li>
+          <li><span class="n">2</span><span><b>Needs setup or an integration.</b> Goes to the forward deployed engineer's queue, ranked by how much it moves the customer's success plan.</span></li>
+          <li><span class="n">3</span><span><b>Product gap.</b> Goes to Product with the business case, the customers asking and the revenue involved. No roadmap promises to the customer.</span></li>
+        </ul>
+        <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Close the loop: tell the customer where the request went and when they will hear back.</p></div>
+      </div>
+    </section>
+
+    <!-- Weekly sponsor note -->
+    <section class="page" id="page-note" data-page="note" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Report</span><h1>Weekly sponsor note</h1><p>Sent every week from the first app onward. It reports output and business value, not logins. All names and numbers are made up.</p></div><span class="pill plain">Sample · Week 9</span></div>
+      <div class="card">
+        <div class="card-h"><div><h2>Week 9: 2 more apps live, Finance unblocked, 1 open ask</h2><div class="note-meta">To the executive sponsor · cc champion, IT lead</div></div></div>
+        <div class="tablewrap">
+          <table class="kv">
+            <thead><tr><th>Team</th><th>In production</th><th>New this week</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Operations</td><td class="n">4</td><td class="n">+1</td><td>Carrier exception tracker</td></tr>
+              <tr><td>Finance</td><td class="n">2</td><td class="n">+1</td><td>Vendor invoice approvals</td></tr>
+              <tr><td>Customer support</td><td class="n">1</td><td class="n">0</td><td>Refund lookup</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Counted only when an app has 10 or more end users and 50 or more views.</p></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>What it's worth so far</h2><span class="sub">Against the baselines agreed at kickoff</span></div>
+        <div class="card-b">
+          <div class="value-grid">
+            <div class="vcard"><span class="k">Time back</span><span class="v">62 hrs/wk</span><span class="d">Ops and Finance, with where the hours went</span></div>
+            <div class="vcard"><span class="k">Spend cut</span><span class="v">$48K/yr</span><span class="d">Approvals tool not renewed</span></div>
+            <div class="vcard"><span class="k">Engineering refocused</span><span class="v">9 tickets</span><span class="d">Internal tools off the engineering queue</span></div>
+            <div class="vcard new"><span class="k">Risk reduced</span><span class="v">3</span><span class="d">Spreadsheets with customer data retired</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>Builders</h2></div>
+          <ul class="items">
+            <li><span class="dot ok" style="margin-top:7px"></span><span><b>7 building weekly</b>, up from 5</span></li>
+            <li><span class="dot" style="margin-top:7px"></span><span><b>6 growing</b>, building at least every other week</span></li>
+            <li><span class="dot warn" style="margin-top:7px"></span><span><b>3 stalled</b>: two are waiting on warehouse data access, one has no use case yet (pairing session booked Thursday)</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Governance</h2></div>
+          <ul class="items check">
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span>All 7 apps sign in through your SSO, and every query and change is in the audit log</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span>Code Security caught 2 high-severity findings before publish. Both were fixed with Clark the same day</span></li>
+            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span>1 Lovable prototype from Ops was imported and now runs on governed integrations instead of a hardcoded database key</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>Blocked, and what we need from you</h2></div>
+          <ul class="items"><li><span>Warehouse data access for two Ops builders. Request is with IT since week 7. <b>Ask:</b> a nudge to the data team lead.</span></li></ul>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Next week</h2></div>
+          <ul class="items"><li><span>Second training cohort (10 builders, 2 days)</span></li><li><span>Demo day with Procurement, who asked to join</span></li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Open questions -->
+    <section class="page" id="page-questions" data-page="questions" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Before this is real</span><h1>Open questions</h1><p>This draft is built from the outside, using public docs. These answers would change it.</p></div></div>
+      <div class="card">
+        <ol class="qlist">
+          <li>How are deals handed over from Sales today, and what context tends to get lost?</li>
+          <li>Which of these materials already exist, and which would help most to build first?</li>
+          <li>What do the current usage dashboards track, and what is missing to tell the value story?</li>
+          <li>What is the most common reason customers stall, and does a Hybrid or Cloud-Prem deployment change that?</li>
+          <li>How long do Hybrid and Cloud-Prem setups take in practice? This draft assumes about one and two extra weeks.</li>
+          <li>How is forward deployed engineer time split across accounts, and who decides?</li>
+          <li>How many existing customers are still mainly on Low-Code, and is moving them to Clark part of this role?</li>
+          <li>How does the team track usage against each customer's commitment, and what pace counts as healthy?</li>
+          <li>When does renewal planning start today, and who owns it with the account executive?</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="page" id="page-about" data-page="about" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Before this is real</span><h1>About this draft</h1><p>A customer deployment playbook drafted by Sardar Ahmar Wasif for a conversation with the Superblocks team, and built with Claude Code.</p></div></div>
+      <div class="card">
+        <ul class="items">
+          <li><span><b>What it is.</b> One repeatable process for a new customer, from signed contract to renewal, that adapts to each account's setup and readiness.</span></li>
+          <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
+          <li><span><b>Data.</b> Every account, name and number in the samples is fictional.</span></li>
+          <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. Timelines are estimates, listed under Open questions.</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var READINESS = [
+    { id: "sponsor", label: "Executive sponsor named and engaged", def: "ready" },
+    { id: "champion", label: "Day-to-day champion named", def: "partial" },
+    { id: "sso", label: "Identity provider ready for SSO (Okta, Entra ID or Google)", def: "ready" },
+    { id: "data", label: "Data sources identified and access approved", def: "partial" },
+    { id: "nonprod", label: "Non-production copy of the data builders will write to", def: "ready" },
+    { id: "usecases", label: "Starter use cases identified", def: "ready" },
+    { id: "appetite", label: "Leadership will promote building with AI internally", def: "ready" }
+  ];
+
+  var STAGES = [
+    {
+      id: "handoff", n: "1", name: "Handoff from Sales", short: "Handoff",
+      goal: "Start the deployment knowing exactly what was promised, what was bought, and why.",
+      exit: ["Handoff brief complete and reviewed with the account executive", "Trial results and success criteria written down", "Commitment, deployment model and purchase path recorded", "Sponsor and champion named, or a plan to name them"],
+      activities: ["Review the trial apps and any feedback from the evaluation", "30-minute handoff call with the account executive", "Note the dollar commitment, the expected usage pace, and whether they bought directly or through AWS Marketplace", "Draft an expansion hypothesis: which departments could come next and why", "Send the sponsor an intro note within two business days of signature"],
+      owners: [["Strategist", "Leads the handoff and writes the expansion hypothesis"], ["Account exec", "Shares context, promises made and the buying committee"], ["FDE", "Reviews technical notes from the trial"]],
+      show: ["Handoff brief", "Intro note to the sponsor"],
+      metrics: ["Business days from signature to kickoff (aim for 10 or fewer)"],
+      flags: ["Nobody can state the success criteria", "Promises made that the product can't meet today", "No named sponsor"]
+    },
+    {
+      id: "kickoff", n: "2", name: "Kickoff and success plan", short: "Kickoff",
+      goal: "The sponsor commits to two business outcomes, a baseline for each, and how they will be measured.",
+      exit: ["Success plan signed off: two outcomes, a baseline and a target date for each", "Weekly sponsor note agreed", "Champion, IT lead and security contact named", "Shared Slack or Microsoft Teams channel open"],
+      activities: ["Kickoff with sponsor, champion, IT lead, forward deployed engineer and strategist", "Capture baselines, such as turnaround time, hours a week spent on a process, or software spend", "Walk IT and security through governance: SSO and roles, audit logs, Code Security checks before publish, and the Edit, Preview and Production environments", "Agree on the meeting cadence and open the shared support channel"],
+      owners: [["Strategist", "Runs the kickoff and writes the success plan"], ["FDE", "Presents the technical plan"], ["Sponsor", "Signs off the outcomes"], ["IT lead", "Confirms the setup path"]],
+      show: ["Kickoff deck", "Success plan (one page)"],
+      metrics: ["A baseline exists for each outcome"],
+      flags: ["The sponsor sends a delegate", "Outcomes described as \"use more AI\"", "No baseline can be found"]
+    },
+    {
+      id: "setup", n: "3", name: "Readiness and setup", short: "Setup",
+      goal: "Builders can sign in, reach the data they need and publish safely on the first day of training.",
+      exit: ["SSO live, with groups synced from the identity provider and mapped to Superblocks roles (Admin, Developer, End-User or custom roles)", "Integrations for the starter apps connected, with data tags set so Clark builds against the right data", "Organization Knowledge added: design system, coding conventions and company terms", "Code Security settings, spend limits and alerts agreed", "A test app published from Preview to Production with checks passing"],
+      activities: ["Set up SSO, and SCIM if the customer uses Okta or Entra ID to manage groups", "Choose the default role for new app creators, for example Developer so builders can't make apps public", "Connect integrations and set data tags so Clark uses non-production data for anything that writes", "Add Organization Knowledge and Integration Knowledge for the key data sources", "Agree Code Security settings: blocking is on by default, who can publish anyway, who gets vulnerability alerts, and whether to use a private package registry", "Set spend limits and alerts, such as a per-user monthly limit and alerts at 80% and 100% of the commitment"],
+      owners: [["FDE", "Leads the technical setup"], ["IT", "Owns identity, roles and data access approvals"], ["Security", "Signs off Code Security settings"], ["Strategist", "Tracks blockers and escalates them to the sponsor"]],
+      show: ["Setup checklist", "Data access tracker"],
+      metrics: ["Days to first published app", "Integrations connected out of those needed"],
+      flags: ["Data access requests with no owner", "Security review not scheduled", "Setup slipping past the planned training date"]
+    },
+    {
+      id: "first", n: "4", name: "First apps live", short: "First apps",
+      goal: "Get the starter apps into production in about 30 days and create the first internal success stories.",
+      exit: ["Starter apps in production, each with 10 or more end users", "First builder cohort trained", "One success story ready to share inside the company"],
+      activities: ["Pick starter apps from the patterns Superblocks fits best: a spreadsheet process to replace, a SaaS tool to replace, a prototype to bring under IT controls, or an automation", "Favor apps that are valuable, use data already connected, and have a named business owner", "Builder training: about 10 builders per cohort, 2 days each. Cover Plan mode before Build mode, checkpoints, Preview and Publish, and fixing security findings with Clark", "Office hours twice a week", "The forward deployed engineer pairs on the hardest app"],
+      owners: [["Strategist", "Picks use cases, runs training and office hours"], ["FDE", "Pairs on complex builds and integrations"], ["Builders", "Build the apps"], ["App owners", "Test and sign off"]],
+      show: ["Use-case scoring sheet", "Training agenda", "Starter app showcase"],
+      metrics: ["Apps in production", "Builders active each week", "Days from idea to production"],
+      flags: ["A starter app needs data that isn't connected", "Builders wait on the engineer for everything", "An app with no named business owner"]
+    },
+    {
+      id: "adopt", n: "5", name: "Adoption and spread", short: "Adoption",
+      goal: "Turn the first builders into a growing community, and make sure builders, business users and admins all get value.",
+      exit: ["Active builders growing week over week", "Every stalled builder has a known reason and a fix", "Business users use the apps weekly", "IT admins manage roles, audit logs and spend on their own"],
+      activities: ["Sort builders each week into frequent, growing and stalled, using Plan & Usage grouped by user", "Reach out to each stalled builder", "Run a demo day or a showcase channel", "Train IT admins on roles, audit logs, spend management and the Admin MCP", "Run the next training cohort"],
+      owners: [["Strategist", "Builder health and outreach"], ["Champion", "Internal communication"], ["IT admins", "Roles, governance and spend"], ["FDE", "Reusable integrations and patterns"]],
+      show: ["Builder health view", "Demo day agenda"],
+      metrics: ["Weekly active builders", "Stalled builders and why", "Apps with 10+ users and 50+ views", "Weekly end users"],
+      flags: ["Usage drops 30% or more in two weeks", "The champion leaves", "All apps come from one or two builders"]
+    },
+    {
+      id: "value", n: "6", name: "Prove value, expand and renew", short: "Value and renewal",
+      goal: "Show the sponsor what changed in the business and earn the next department.",
+      exit: ["Value review held against the kickoff outcomes", "Plan agreed for the next department", "Renewal case drafted at least 90 days before renewal"],
+      activities: ["Send the weekly sponsor note", "Quarterly value review with the sponsor", "Track requests coming in from other departments", "Check usage against the commitment each month, so a renewal or expansion conversation never comes as a surprise", "Build the renewal case with the account executive"],
+      owners: [["Strategist", "Leads the value story and expansion plan"], ["Account exec", "Commercial terms"], ["Sponsor", "Champions the results inside the company"], ["FDE", "Scopes the technical work for expansion"]],
+      show: ["Weekly sponsor note", "Quarterly value review", "Expansion proposal"],
+      metrics: ["Time back (hours a week)", "Spend cut (dollars)", "Engineering refocused (tickets or projects off the queue)", "Risk reduced (spreadsheets with sensitive data retired, prototypes and unapproved tools brought under governance)", "Usage against the commitment"],
+      flags: ["Value only described as usage", "The sponsor can't repeat the results", "No requests from other teams by month three"]
+    }
+  ];
+
+
+  function computePlan(i) {
+    var base = { handoff: 1, kickoff: 1, setup: 2, first: 4, adopt: 6 };
+    var weeks = Object.assign({}, base);
+    var added = { handoff: [], kickoff: [], setup: [], first: [], adopt: [], value: [] };
+    var flags = [];
+    var cohorts = Math.max(1, Math.ceil(i.builders / 10));
+    var starter = i.depts === "1" ? 3 : i.depts === "2-3" ? 5 : 6;
+    var notReady = function (k) { return i.r[k] === "not"; };
+    var partly = function (k) { return i.r[k] === "partial"; };
+    var gap = function (k) { return notReady(k) || partly(k); };
+
+    // Deployment model
+    if (i.deploy === "cloud") {
+      added.handoff.push({ t: "Confirm the instance region (Cloud US or Cloud EU) based on where the customer's data must live", why: "Cloud" });
+      added.setup.push({ t: "Allowlist the Superblocks outbound IP addresses on the databases the starter apps need", why: "Cloud" });
+    }
+    if (i.deploy === "hybrid") {
+      weeks.setup += 1;
+      added.handoff.push({ t: "Confirm the customer's cloud team contact and their change-approval process", why: "Hybrid" });
+      added.setup.push({ t: "Deploy the data plane in the customer's AWS, GCP or Azure with their cloud team. Most customers run two: one for non-production and one for production", why: "Hybrid" });
+      added.setup.push({ t: "Agree which data Clark may read while building. In Hybrid, data read in Edit is sent to Superblocks Cloud, so default to non-production data", why: "Hybrid" });
+      flags.push({ lvl: "info", t: "Customer cloud team needed", d: "Hybrid puts the data plane in the customer's cloud, which adds about a week. Book their cloud team before kickoff." });
+    }
+    if (i.deploy === "prem") {
+      weeks.setup += 2;
+      added.handoff.push({ t: "Introduce the Superblocks deployment team and agree the AWS region", why: "Cloud-Prem" });
+      added.setup.push({ t: "Customer runs the Superblocks-provided Terraform in their AWS account, then the Superblocks deployment team installs the platform and configures SSO", why: "Cloud-Prem" });
+      added.setup.push({ t: "Point Clark and in-app AI at Amazon Bedrock, with the models and regions the customer approves", why: "Cloud-Prem" });
+      flags.push({ lvl: "info", t: "Longer setup", d: "Cloud-Prem runs the whole platform in the customer's AWS, which adds about two weeks. Book their cloud team before kickoff." });
+    }
+    if (i.regulated) {
+      weeks.setup += 1;
+      added.kickoff.push({ t: "Invite compliance to the kickoff so their requirements are known up front", why: "Regulated" });
+      added.setup.push({ t: "Security and compliance review: data residency, access controls and audit logging. Share the SOC 2 Type II report from the Superblocks Trust Center, and a BAA if the customer handles health data", why: "Regulated" });
+      added.first.push({ t: "Choose starter apps that avoid the most sensitive data until the compliance review closes", why: "Regulated" });
+      added.value.push({ t: "Lead the value story with risk reduced: sensitive spreadsheets retired and unapproved tools replaced", why: "Regulated" });
+      if (i.deploy === "cloud") {
+        flags.push({ lvl: "warn", t: "Deployment fit", d: "Regulated customers often need data to stay in their own cloud. Confirm Cloud meets their requirements, or discuss Hybrid or Cloud-Prem." });
+      }
+    }
+
+    // Scope and builders
+    if (i.depts === "4+") {
+      weeks.adopt += 2;
+      added.first.push({ t: "Wave 1: start with two lighthouse departments. The others join in wave 2", why: "4+ departments" });
+      added.adopt.push({ t: "Wave 2: bring in the remaining departments, using wave 1 apps as examples", why: "4+ departments" });
+    }
+    if (i.depts === "1") {
+      added.value.push({ t: "Name the second department by the value review and invite them to demo day", why: "1 department" });
+    }
+    added.first.push({ t: "Run " + cohorts + " training cohort" + (cohorts > 1 ? "s" : "") + " of about 10 builders, 2 days each", why: i.builders + " builders" });
+    if (cohorts > 2) weeks.first += 1;
+    if (i.builders > 40) {
+      added.adopt.push({ t: "Name a builder lead in each department to run local office hours", why: i.builders + " builders" });
+    }
+
+    // Starting point and channels
+    if (i.start === "lowcode") {
+      added.handoff.push({ t: "List the Low-Code apps in use, who owns them and how heavily each is used", why: "Moving from Low-Code" });
+      added.setup.push({ t: "Choose which existing integrations to enable for Clark. Clark reads data while building, so review each one", why: "Moving from Low-Code" });
+      added.first.push({ t: "Rebuild one well-used Low-Code app in Clark as a starter app. Clark can work from screenshots of the current app", why: "Moving from Low-Code" });
+      added.adopt.push({ t: "Plan the rest of the move to Clark over time. Low-Code apps keep working, so go in order of usage", why: "Moving from Low-Code" });
+      flags.push({ lvl: "info", t: "Existing customer", d: "Their Low-Code apps keep running. A Clark rebuild of an app people already use makes a fast, visible first win." });
+    }
+    if (i.protos) {
+      added.first.push({ t: "Import one or two existing prototypes as starter apps. Clark replaces hardcoded keys, databases and custom login with governed integrations, SSO and roles", why: "Prototypes exist" });
+      added.value.push({ t: "Count every imported prototype under risk reduced", why: "Prototypes exist" });
+    }
+    if (i.claude) {
+      added.setup.push({ t: "Enable Superblocks in Claude (beta): request access from the account team, then a Claude org owner uploads the plugin", why: "Uses Claude" });
+      added.first.push({ t: "Show builders how to build, import and publish from Claude, where many already prototype", why: "Uses Claude" });
+    }
+
+    // Readiness
+    if (gap("sponsor")) {
+      added.kickoff.push({ t: "Hold a 30-minute outcomes session with the sponsor before kickoff. No builder training until outcomes are signed off", why: "Sponsor not confirmed" });
+      if (notReady("sponsor")) weeks.kickoff += 1;
+      flags.push({ lvl: notReady("sponsor") ? "risk" : "warn", t: "Sponsor", d: "Without an engaged sponsor there is no one to report value to or to clear blockers. Secure the outcomes session first." });
+    }
+    if (gap("champion")) {
+      added.kickoff.push({ t: "Ask the sponsor to name a day-to-day champion at the kickoff", why: "Champion not confirmed" });
+      flags.push({ lvl: notReady("champion") ? "risk" : "warn", t: "Champion", d: "Adoption usually stalls without someone inside who answers questions and promotes wins. Get a name at kickoff." });
+    }
+    if (gap("sso")) {
+      added.setup.push({ t: "Identity session with IT: create the SSO app and map identity provider groups to Superblocks roles", why: "Identity not ready" });
+      if (notReady("sso")) weeks.setup += 1;
+      var ssoBlocks = i.deploy === "prem";
+      flags.push({ lvl: notReady("sso") || ssoBlocks ? "risk" : "warn", t: "Sign-in and roles", d: ssoBlocks ? "Cloud-Prem instances are SSO-only, so nobody can sign in until the SSO app exists. Make it the first setup task." : "Builders can't start until sign-in and roles work. Schedule the identity session with IT before kickoff." });
+    }
+    if (gap("data")) {
+      added.setup.push({ t: "Start a data access tracker: every source the starter apps need, its owner and the approval date", why: "Data access not confirmed" });
+      if (notReady("data")) weeks.setup += 1;
+      flags.push({ lvl: notReady("data") ? "risk" : "warn", t: "Data access", d: "Missing data access is a leading reason builders stall. List the sources for the starter apps and get owners this week." });
+    }
+    if (gap("nonprod")) {
+      added.setup.push({ t: "Create a non-production data tag for each source the starter apps write to, or start with read-only apps", why: "No non-production data" });
+      if (notReady("nonprod")) weeks.setup += 1;
+      flags.push({ lvl: notReady("nonprod") ? "risk" : "warn", t: "Safe data for building", d: "Clark tests against real data while it builds and can write to it. Without a non-production copy, start with read-only apps." });
+    }
+    if (gap("usecases")) {
+      added.first.push({ t: "Run a 90-minute backlog workshop: spreadsheets to replace, SaaS tools to replace, prototypes to import, and approval or reporting flows", why: "Use cases not identified" });
+      if (notReady("usecases")) weeks.first += 1;
+      flags.push({ lvl: notReady("usecases") ? "risk" : "warn", t: "Starter use cases", d: "Builders without a clear first app stall early. Run the backlog workshop in week one." });
+    }
+    if (gap("appetite")) {
+      added.adopt.push({ t: "Plan the internal launch with the champion: demo day, a showcase channel, and a message from the sponsor", why: "Low internal push" });
+      flags.push({ lvl: notReady("appetite") ? "risk" : "warn", t: "Internal push", d: "If leadership won't promote building with AI, adoption stays small. Plan the internal launch with the champion." });
+    }
+
+    var order = ["risk", "warn", "info"];
+    flags.sort(function (a, b) { return order.indexOf(a.lvl) - order.indexOf(b.lvl); });
+
+    // Schedule
+    var seq = ["handoff", "kickoff", "setup", "first", "adopt"];
+    var sched = {}, t = 0;
+    seq.forEach(function (k) { sched[k] = { start: t, len: weeks[k], ext: weeks[k] > base[k] }; t += weeks[k]; });
+    var firstApp = sched.first.start + 2;
+    var valueReview = sched.adopt.start + sched.adopt.len;
+    var total = valueReview + 2;
+    sched.value = { start: firstApp, len: total - firstApp, ongoing: true };
+
+    var ready = READINESS.filter(function (r) { return i.r[r.id] === "ready"; }).length;
+    var overall = flags.some(function (f) { return f.lvl === "risk"; }) ? "risk" : flags.some(function (f) { return f.lvl === "warn"; }) ? "warn" : "ok";
+
+    return { weeks: weeks, added: added, flags: flags, sched: sched, total: total, firstApp: firstApp, valueReview: valueReview, cohorts: cohorts, starter: starter, ready: ready, overall: overall };
+  }
+
+
+  var ICONS = {
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    sliders: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+    handoff: '<path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/>',
+    flag: '<path d="M5 22V4M5 4h11l-2 4 2 4H5"/>',
+    shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+    app: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"/>',
+    trend: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>',
+    pulse: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+    inbox: '<path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/>',
+    file: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/>',
+    help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+    alert: '<path d="M12 3 2 20h20zM12 10v4M12 17h.01"/>',
+    chart: '<path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+    db: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+    book: '<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',
+    wallet: '<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/>',
+    cloud: '<path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 11.6 3.3 3.3 0 0 0 7 18z"/>',
+    doc: '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4"/>'
+  };
+  function icon(n) { return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[n] || "") + "</svg>"; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  var STAGE_ICON = { handoff: "handoff", kickoff: "flag", setup: "shield", first: "app", adopt: "users", value: "trend" };
+  var STAGE_GROUP = { handoff: "Plan", kickoff: "Plan", setup: "Set up and govern", first: "Launch and grow", adopt: "Launch and grow", value: "Launch and grow" };
+  var STAGE_NAV = { handoff: "Handoff from Sales", kickoff: "Kickoff and success plan", setup: "Readiness and setup", first: "First apps live", adopt: "Adoption and spread", value: "Value and renewal" };
+  var NAV = [
+    { group: null, items: [{ id: "overview", label: "Overview", icon: "grid" }, { id: "account", label: "Account setup", icon: "sliders", badge: "ready" }] },
+    { group: "Plan", items: [{ id: "handoff" }, { id: "kickoff" }] },
+    { group: "Set up and govern", items: [{ id: "setup" }] },
+    { group: "Launch and grow", items: [{ id: "first" }, { id: "adopt" }, { id: "value" }] },
+    { group: "Always on", items: [{ id: "health", label: "Health and recovery", icon: "pulse" }, { id: "requests", label: "Requests and feedback", icon: "inbox" }] },
+    { group: "Report", items: [{ id: "note", label: "Weekly sponsor note", icon: "file" }] },
+    { group: "Before this is real", items: [{ id: "questions", label: "Open questions", icon: "help" }, { id: "about", label: "About this draft", icon: "info" }] }
+  ];
+  var STAGE_IDS = STAGES.map(function (s) { return s.id; });
+  var TITLES = { overview: "Overview", account: "Account setup", health: "Health and recovery", requests: "Requests and feedback", note: "Weekly sponsor note", questions: "Open questions", about: "About this draft" };
+  STAGE_IDS.forEach(function (id) { TITLES[id] = STAGE_NAV[id]; });
+
+  var current = "overview";
+  var plan;
+
+  // Readiness rows
+  var readinessEl = document.getElementById("readiness");
+  readinessEl.innerHTML = READINESS.map(function (r) {
+    var lid = "r-" + r.id + "-l";
+    return '<div class="srow"><div><div class="s-label" id="' + lid + '">' + esc(r.label) + '</div></div>' +
+      '<div class="seg tri" role="radiogroup" aria-labelledby="' + lid + '">' +
+      ["ready", "partial", "not"].map(function (v) {
+        var id = "r-" + r.id + "-" + v;
+        var text = v === "ready" ? "Ready" : v === "partial" ? "Partly" : "Not yet";
+        return '<input type="radio" name="' + r.id + '" id="' + id + '" value="' + v + '"' + (r.def === v ? " checked" : "") + '><label for="' + id + '">' + text + "</label>";
+      }).join("") + "</div></div>";
+  }).join("");
+
+  function val(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : null; }
+  function readInput() {
+    var b = parseInt(document.getElementById("builders").value, 10);
+    if (!isFinite(b) || b < 1) b = 1;
+    if (b > 2000) b = 2000;
+    var input = { deploy: val("deploy"), regulated: val("regulated") === "yes", depts: val("depts"), builders: b, start: val("start"), protos: val("protos") === "yes", claude: val("claude") === "yes", r: {} };
+    READINESS.forEach(function (r) { input.r[r.id] = val(r.id); });
+    return input;
+  }
+  function rlevel(id) { var v = val(id); return v === "ready" ? "ok" : v === "partial" ? "warn" : "risk"; }
+  function worst(a, b) { var o = ["ok", "warn", "risk"]; return o[Math.max(o.indexOf(a), o.indexOf(b))]; }
+
+  function renderNav() {
+    var html = "";
+    NAV.forEach(function (g) {
+      if (g.group) html += '<div class="nav-group">' + esc(g.group) + "</div>";
+      g.items.forEach(function (it) {
+        var isStage = STAGE_IDS.indexOf(it.id) > -1;
+        var label = isStage ? STAGE_NAV[it.id] : it.label;
+        var ic = isStage ? STAGE_ICON[it.id] : it.icon;
+        var badge = "";
+        if (it.badge === "ready") badge = '<span class="nav-badge">' + Math.round(plan.ready / READINESS.length * 100) + "%</span>";
+        if (isStage && plan.added[it.id].length) badge = '<span class="nav-badge add" title="Steps added for this account">+' + plan.added[it.id].length + "</span>";
+        html += '<button type="button" class="nav-item" data-go="' + it.id + '"' + (it.id === current ? ' aria-current="page"' : "") + ">" + icon(ic) + '<span class="nav-label">' + esc(label) + "</span>" + badge + "</button>";
+      });
+    });
+    document.getElementById("nav").innerHTML = html;
+  }
+
+  function stageRow(id) {
+    var st = STAGES.filter(function (s) { return s.id === id; })[0];
+    var s = plan.sched[id];
+    var when = s.ongoing ? "From week " + s.start : "Weeks " + s.start + "–" + (s.start + s.len);
+    var n = plan.added[id].length;
+    return '<button type="button" class="row" data-go="' + id + '"><span class="row-icon">' + icon(STAGE_ICON[id]) + '</span><span class="row-text"><span class="row-title">' + esc(STAGE_NAV[id]) + '</span><span class="row-sub">' + when + (n ? " · " + n + " added" : "") + "</span></span></button>";
+  }
+  function govRow(ic, title, sub, lvl) {
+    return '<button type="button" class="row" data-go="setup"><span class="row-icon">' + icon(ic) + '</span><span class="row-text"><span class="row-title">' + esc(title) + '</span><span class="row-sub">' + esc(sub) + "</span></span>" + (lvl ? '<span class="dot ' + lvl + '" title="Readiness"></span>' : "") + "</button>";
+  }
+
+  function renderOverview() {
+    var o = document.getElementById("ov-status");
+    o.className = "pill " + plan.overall;
+    o.textContent = plan.overall === "ok" ? "On track" : plan.overall === "warn" ? "Watch" : "At risk";
+    document.getElementById("ov-stats").innerHTML = [
+      "First app live: week " + plan.firstApp, "Value review: week " + plan.valueReview, plan.starter + " starter apps", plan.cohorts + " training cohort" + (plan.cohorts > 1 ? "s" : ""), plan.ready + " of " + READINESS.length + " readiness items ready"
+    ].map(function (t) { return '<span class="pill plain">' + esc(t) + "</span>"; }).join("");
+
+    var dep = val("deploy");
+    var depSub = dep === "cloud" ? "Superblocks Cloud · IP allowlist" : dep === "hybrid" ? "Data plane in customer cloud" : "Full platform in customer AWS";
+    var depName = dep === "cloud" ? "Cloud" : dep === "hybrid" ? "Hybrid" : "Cloud-Prem";
+    var flow =
+      '<div class="node"><div class="node-frame"><div class="node-box">' + icon("users") + 'Account team</div></div><div class="node-chips"><span class="chip">Strategist</span><span class="chip">FDE</span><span class="chip">Account exec</span></div></div>' +
+      '<div class="col"><div class="col-h"><span class="num">1</span>Plan</div>' + stageRow("handoff") + stageRow("kickoff") + "</div>" +
+      '<div class="col"><div class="col-h"><span class="num">2</span>Set up and govern</div>' + stageRow("setup") +
+        govRow("cloud", "Deployment", depName + " · " + depSub) +
+        govRow("key", "Identity", "SSO · SCIM · roles", rlevel("sso")) +
+        govRow("db", "Data", "Integrations · data tags", worst(rlevel("data"), rlevel("nonprod"))) +
+        govRow("book", "Knowledge", "Organization and integration knowledge") +
+        govRow("shield", "Code Security", "Blocking mode on by default") +
+        govRow("wallet", "Spend", "Limits · alerts") +
+      "</div>" +
+      '<div class="col"><div class="col-h"><span class="num">3</span>Launch and grow</div>' + stageRow("first") + stageRow("adopt") + stageRow("value") + "</div>" +
+      '<div class="node"><div class="node-frame"><div class="node-box">' + icon("person") + 'Customer</div></div><div class="node-chips"><span class="chip"><span class="dot ' + rlevel("sponsor") + '"></span>Sponsor</span><span class="chip"><span class="dot ' + rlevel("champion") + '"></span>Champion</span></div></div>';
+    document.getElementById("ov-flow").innerHTML = flow;
+    document.getElementById("ov-always").innerHTML =
+      '<button type="button" class="chip" data-go="health">' + icon("pulse") + "Health and recovery</button>" +
+      '<button type="button" class="chip" data-go="requests">' + icon("inbox") + "Requests and feedback</button>" +
+      '<button type="button" class="chip" data-go="note">' + icon("file") + "Weekly sponsor note · from week " + plan.firstApp + "</button>";
+
+    var T = plan.total, step = T > 20 ? 4 : 2;
+    document.getElementById("tl-sub").textContent = T + " weeks to the expansion proposal";
+    var rows = STAGES.map(function (st) {
+      var s = plan.sched[st.id];
+      var left = (s.start / T) * 100, width = (s.len / T) * 100;
+      var label = width < 9 ? "" : s.ongoing ? "Weekly note from wk " + s.start : s.len + " wk" + (s.len > 1 ? "s" : "");
+      var cls = "tl-bar" + (s.ongoing ? " ongoing" : "") + (s.ext ? " extended" : "");
+      return '<button type="button" class="tl-row" data-go="' + st.id + '" aria-label="' + esc(STAGE_NAV[st.id]) + ", weeks " + s.start + " to " + (s.start + s.len) + '"><span class="tl-name">' + st.n + ". " + esc(st.short) + '</span><span class="tl-track"><span class="' + cls + '" style="left:' + left + "%;width:" + width + '%">' + label + "</span></span></button>";
+    }).join("");
+    var ticks = "";
+    for (var w = 0; w <= T; w += step) ticks += '<span style="left:' + (w / T * 100) + '%">W' + w + "</span>";
+    document.getElementById("timeline").innerHTML = rows + '<div class="tl-axis" aria-hidden="true"><span></span><div class="tl-ticks">' + ticks + "</div></div>";
+
+    document.getElementById("flags").innerHTML = plan.flags.length
+      ? plan.flags.map(function (x) { return '<li class="flag ' + x.lvl + '"><div><strong>' + esc(x.t) + "</strong><span>" + esc(x.d) + "</span></div></li>"; }).join("")
+      : '<li class="empty">Nothing flagged. Run the standard plan.</li>';
+  }
+
+  function list(items, cls, ic) {
+    return '<ul class="items ' + (cls || "") + '">' + items.map(function (x) { return "<li>" + (ic ? icon(ic) : "") + "<span>" + esc(x) + "</span></li>"; }).join("") + "</ul>";
+  }
+  function numbered(items) {
+    return '<ul class="items">' + items.map(function (x, i) { return '<li><span class="n">' + (i + 1) + "</span><span>" + esc(x) + "</span></li>"; }).join("") + "</ul>";
+  }
+
+  function renderStage(id) {
+    var st = STAGES.filter(function (s) { return s.id === id; })[0];
+    var s = plan.sched[id];
+    var when = s.ongoing ? "Weekly from week " + s.start : "Weeks " + s.start + "–" + (s.start + s.len);
+    var add = plan.added[id];
+    var idx = STAGE_IDS.indexOf(id);
+    var prev = idx > 0 ? STAGE_IDS[idx - 1] : null, next = idx < STAGE_IDS.length - 1 ? STAGE_IDS[idx + 1] : null;
+    var html =
+      '<div class="ph"><div class="ph-text"><span class="crumb">' + esc(STAGE_GROUP[id]) + " · Stage " + st.n + " of 6</span><h1>" + esc(st.name) + '</h1><p class="goal">' + esc(st.goal) + "</p></div>" +
+      '<div class="stat-row"><span class="pill plain">' + when + "</span>" + (s.ongoing ? "" : '<span class="pill plain">' + s.len + " week" + (s.len > 1 ? "s" : "") + "</span>") + (s.ext ? '<span class="pill warn">Extended for this account</span>' : "") + "</div></div>";
+    if (add.length) {
+      html += '<div class="callout"><h2>' + icon("alert") + "Added for this account</h2><ul>" + add.map(function (a) { return "<li>" + esc(a.t) + ' <span class="why">· ' + esc(a.why) + "</span></li>"; }).join("") + "</ul></div>";
+    }
+    var show = '<ul class="items">' + st.show.map(function (x) {
+      return x === "Weekly sponsor note"
+        ? '<li>' + icon("doc") + '<span><button type="button" class="chip" data-go="note">Weekly sponsor note</button></span></li>'
+        : "<li>" + icon("doc") + "<span>" + esc(x) + "</span></li>";
+    }).join("") + "</ul>";
+    html += '<div class="grid2">' +
+      '<div class="card"><div class="card-h"><h2>Done when</h2></div>' + list(st.exit, "check", "check") + "</div>" +
+      '<div class="card"><div class="card-h"><h2>Key activities</h2></div>' + numbered(st.activities) + "</div>" +
+      '<div class="card"><div class="card-h"><h2>Who owns what</h2></div><ul class="items">' + st.owners.map(function (o) { return '<li><span class="owner-role">' + esc(o[0]) + "</span><span>" + esc(o[1]) + "</span></li>"; }).join("") + "</ul></div>" +
+      '<div class="card"><div class="card-h"><h2>What you show</h2></div>' + show + "</div>" +
+      '<div class="card"><div class="card-h"><h2>Metrics</h2></div>' + list(st.metrics, "", "chart") + "</div>" +
+      '<div class="card"><div class="card-h"><h2>Red flags</h2></div>' + list(st.flags, "flagged", "alert") + "</div>" +
+      "</div>";
+    html += '<div class="stat-row" style="justify-content:space-between">' +
+      (prev ? '<button type="button" class="chip" data-go="' + prev + '">← ' + esc(STAGE_NAV[prev]) + "</button>" : "<span></span>") +
+      (next ? '<button type="button" class="chip" data-go="' + next + '">' + esc(STAGE_NAV[next]) + " →</button>" : "") + "</div>";
+    document.getElementById("page-stage").innerHTML = html;
+  }
+
+  function renderAccountProgress() {
+    var pct = Math.round(plan.ready / READINESS.length * 100);
+    document.getElementById("prog-bar").style.width = pct + "%";
+    document.getElementById("prog-text").textContent = plan.ready + " of " + READINESS.length + " ready";
+  }
+
+  var sidebar = document.getElementById("sidebar"), scrim = document.getElementById("scrim"), menuBtn = document.getElementById("menu-btn");
+  function setMenu(open) {
+    sidebar.classList.toggle("open", open);
+    scrim.classList.toggle("open", open);
+    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function show(id, fromNav) {
+    if (!TITLES[id]) id = "overview";
+    current = id;
+    var isStage = STAGE_IDS.indexOf(id) > -1;
+    document.querySelectorAll("[data-page]").forEach(function (sec) {
+      var p = sec.getAttribute("data-page");
+      sec.hidden = isStage ? p !== "stage" : p !== id;
+    });
+    if (isStage) renderStage(id);
+    if (id === "overview") renderOverview();
+    renderNav();
+    document.getElementById("topbar-title").textContent = TITLES[id];
+    setMenu(false);
+    if (fromNav) {
+      try { history.replaceState(null, "", "#" + id); } catch (e) {}
+      window.scrollTo(0, 0);
+    }
+  }
+
+  function update() {
+    plan = computePlan(readInput());
+    renderNav();
+    renderOverview();
+    renderAccountProgress();
+    if (STAGE_IDS.indexOf(current) > -1) renderStage(current);
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-go]");
+    if (!t) return;
+    e.preventDefault();
+    show(t.getAttribute("data-go"), true);
+  });
+  menuBtn.addEventListener("click", function () { setMenu(!sidebar.classList.contains("open")); });
+  scrim.addEventListener("click", function () { setMenu(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
+  var form = document.getElementById("intake");
+  form.addEventListener("input", update);
+  form.addEventListener("change", update);
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  plan = computePlan(readInput());
+  var start = (location.hash || "").replace("#", "");
+  show(TITLES[start] ? start : "overview", false);
+  renderAccountProgress();
+})();
+</script>
+
+</body>
+</html>
