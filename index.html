@@ -300,6 +300,13 @@ input[type="number"]:focus-visible { outline: 2px solid var(--dark); outline-off
 .qlist li:first-child { border-top: 0; }
 .qlist li::before { content: counter(q); width: 22px; height: 22px; border-radius: 6px; background: var(--panel); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; color: var(--ink-2); }
 a { color: var(--ink); text-underline-offset: 2px; }
+.beliefs { margin: 0; padding: 0; list-style: none; counter-reset: b; }
+.beliefs li { counter-increment: b; display: flex; gap: 12px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-2); }
+.beliefs li:first-child { border-top: 0; }
+.beliefs li::before { content: counter(b); width: 22px; height: 22px; border-radius: 6px; background: var(--dark); color: var(--on-dark); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; }
+.beliefs b { color: var(--ink); font-weight: 600; }
+.start-foot { padding: 10px 16px; border-top: 1px solid var(--line); background: #FAFBFC; border-radius: 0 0 11px 11px; font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.start-foot b { color: var(--ink-2); font-weight: 600; }
 
 /* Account switcher */
 /* Account brief */
@@ -398,6 +405,15 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <h1 id="ov-title">Customer deployment</h1>
           <p>One process for every new customer, from signed contract to renewal. Set up the account and every stage adjusts.</p>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Start here</h2><span class="sub">How I'd run deployments, in three beliefs</span></div>
+        <ol class="beliefs">
+          <li><span><b>The first 30 days decide the renewal.</b> Agree the sponsor's outcomes before anyone builds, then get the first apps live about 30 days after kickoff.</span></li>
+          <li><span><b>Value is hours and dollars, never logins.</b> The sponsor agrees two outcomes and a baseline for each at kickoff, and every review comes back to them.</span></li>
+          <li><span><b>Every customer gets the same playbook.</b> The account setup decides the work involved, not the contract size.</span></li>
+        </ol>
+        <div class="start-foot"><span><b>Who it's for:</b> Enterprise accounts that want hands-on help from post-sales, with leaders willing to push AI adoption internally.</span><span><b>How to use it:</b> open any stage and tick items as you go, or change Account setup and watch every stage adapt.</span></div>
       </div>
       <div class="ov-head">
         <div class="strip" id="ov-strip"></div>
@@ -506,12 +522,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     <!-- Stage (rendered) -->
     <section class="page" id="page-stage" data-page="stage" hidden></section>
 
-    <!-- Health and recovery -->
+    <!-- Health and activation plans -->
     <section class="page" id="page-health" data-page="health" hidden>
-      <div class="ph"><div class="ph-text"><span class="crumb">As needed</span><h1>Health and recovery</h1><p>Use at any stage. Check every account weekly, and when a trigger fires, run the first-week recovery.</p></div></div>
+      <div class="ph"><div class="ph-text"><span class="crumb">As needed</span><h1>Health and activation plans</h1><p>Use at any stage. Check every account weekly. When a trigger fires, run an activation plan: find the cause, then get usage back.</p></div></div>
       <div class="grid2">
         <div class="card">
-          <div class="card-h"><h2>Start a recovery when</h2></div>
+          <div class="card-h"><h2>Start an activation plan when</h2></div>
           <ul class="items flagged">
             <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Weekly active builders fall 30% or more for two weeks in a row</span></li>
             <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>No new app reaches production in three weeks</span></li>
@@ -524,13 +540,13 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Where to look: Plan &amp; Usage (usage by user, app and day, and published-app views), audit logs, or the Admin MCP.</p></div>
         </div>
         <div class="card">
-          <div class="card-h"><h2>First week of a recovery</h2></div>
+          <div class="card-h"><h2>First week of an activation plan</h2></div>
           <ul class="items">
             <li><span class="n">1</span><span><b>Day 1.</b> Pull usage data: who stopped building, which apps lost users, and when it started.</span></li>
             <li><span class="n">2</span><span><b>Days 2–3.</b> Talk to the champion and two or three stalled builders. Ask what got in the way, not whether they like the product.</span></li>
             <li><span class="n">3</span><span><b>Day 3.</b> Name the cause: data access, no clear use case, sponsor change, spend limits, blocked publishes, a product gap, or a team change.</span></li>
             <li><span class="n">4</span><span><b>Day 4.</b> Pick two quick wins, each with a named owner and a date.</span></li>
-            <li><span class="n">5</span><span><b>Day 5.</b> Send the sponsor a recovery note with the numbers, the cause and a 30-day plan.</span></li>
+            <li><span class="n">5</span><span><b>Day 5.</b> Send the sponsor a note with the numbers, the cause and a 30-day plan.</span></li>
           </ul>
         </div>
       </div>
@@ -542,7 +558,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       <div class="card">
         <ul class="items">
           <li><span class="n">1</span><span><b>Works today.</b> The strategist shows them how, and adds it to the training material if others will ask too.</span></li>
-          <li><span class="n">2</span><span><b>Needs setup or an integration.</b> Goes to the forward deployed engineer's queue, ranked by how much it moves the customer's success plan.</span></li>
+          <li><span class="n">2</span><span><b>Needs setup or an integration.</b> Goes to the forward deployed engineer's queue, ranked by how much it moves the customer's mutual success plan.</span></li>
           <li><span class="n">3</span><span><b>Product gap.</b> Goes to Product with the business case, the customers asking and the revenue involved. No roadmap promises to the customer.</span></li>
         </ul>
         <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Close the loop: tell the customer where the request went and when they will hear back.</p></div>
@@ -621,7 +637,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <li>How many existing customers are still mainly on Low-Code, and is moving them to Clark part of this role?</li>
           <li>How does the team track usage against each customer's commitment, and what pace counts as healthy?</li>
           <li>When does renewal planning start today, and who owns it with the account executive?</li>
-          <li>Is about 30 days from kickoff to first apps live the right target?</li>
+          <li>Is about 30 days from kickoff to first apps live the right time to first value target?</li>
           <li>Where does account tracking live today, and should these checklists feed into it?</li>
         </ol>
       </div>
@@ -633,7 +649,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       <div class="card">
         <ul class="items">
           <li><span><b>What it is.</b> One repeatable process for a new customer, from signed contract to renewal, that adapts to each account's setup and readiness.</span></li>
-          <li><span><b>Plan.</b> Written for Enterprise accounts, the plan that comes with a dedicated account team.</span></li>
+          <li><span><b>Who it's for.</b> Enterprise accounts, the plan that comes with a dedicated account team, that also fit hands-on deployment: enough spend and company size to justify it, a team that wants hands-on help from post-sales, and leaders willing to push AI adoption internally.</span></li>
           <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
           <li><span><b>Data.</b> The SoFi example account uses only SoFi's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or SoFi data. The SoFi scorecard has no numbers on purpose. The weekly sponsor note is a fictional sample.</span></li>
           <li><span><b>Saved.</b> Account setup, the brief, ticked items, your own watch-outs and the scorecard are saved in this browser only.</span></li>
@@ -662,12 +678,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       id: "handoff", n: "1", name: "Handoff from Sales", short: "Handoff",
       goal: "Start the deployment knowing exactly what was promised, what was bought, and why.",
       items: [
-        { id: "h1", t: "Review the trial apps and evaluation feedback", who: ["Strategist", "FDE"], d: "Look at what the customer built during the trial, what worked, and what the evaluation team said. The FDE reads the technical notes." },
+        { id: "h1", t: "Review the POC apps and evaluation feedback", who: ["Strategist", "FDE"], d: "Look at what the customer built during the POC (proof of concept), what worked, and what the evaluation team said. The FDE reads the technical notes." },
         { id: "h2", t: "Hold a 30-minute handoff call with the account exec", who: ["Strategist", "Account exec"], d: "Cover why they bought, what was promised, who sat on the buying committee, and anything that could slow setup." },
-        { id: "h3", t: "Write the handoff brief", who: ["Strategist"], tpl: "Handoff brief", d: "One page: trial results, success criteria, promises made and open risks. Review it with the account exec. The account brief under Account setup is the starting point." },
+        { id: "h3", t: "Write the handoff brief", who: ["Strategist"], tpl: "Handoff brief", d: "One page: POC results, success criteria, promises made and open risks. Review it with the account exec. The account brief under Account setup is the starting point." },
         { id: "h4", t: "Record the commitment, deployment model and purchase path", who: ["Strategist"], d: "The dollar commitment, the expected usage pace, the deployment model, and whether they bought directly or through AWS Marketplace." },
         { id: "h5", t: "Confirm the sponsor and champion, or a plan to name them", who: ["Strategist", "Account exec"] },
-        { id: "h6", t: "Draft an expansion hypothesis", who: ["Strategist"], d: "Which departments could come next, and why. It's a guess for now, and gets tested at the first value review." },
+        { id: "h6", t: "Draft an expansion hypothesis", who: ["Strategist"], d: "Which departments could come next, and why. It's a guess for now, and gets tested at the first executive business review (EBR)." },
         { id: "h7", t: "Send the sponsor an intro note within two business days of signature", who: ["Strategist"], tpl: "Intro note to the sponsor", d: "Introduce the team, propose kickoff dates and ask who should attend. Aim to hold the kickoff within 10 business days of signature." }
       ],
       watch: ["Nobody can state the success criteria", "Promises made that the product can't meet today", "No named sponsor"]
@@ -679,7 +695,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
         { id: "k1", t: "Run the kickoff", who: ["Strategist", "FDE", "Customer"], tpl: "Kickoff deck", d: "Sponsor, champion, IT lead, FDE and strategist together. The strategist runs it and the FDE presents the technical plan." },
         { id: "k2", t: "Agree two business outcomes with the sponsor", who: ["Strategist", "Customer"], brief: "outcomes", d: "In business terms, such as hours back or tools retired, never \"use more AI\"." },
         { id: "k3", t: "Capture a baseline for each outcome", who: ["Strategist", "Customer"], d: "Such as turnaround time, hours a week spent on a process, or software spend. Without a baseline there is no value story later." },
-        { id: "k4", t: "Get the success plan signed off", who: ["Strategist", "Customer"], tpl: "Success plan (one page)", d: "Two outcomes, a baseline and a target date for each, signed off by the sponsor. They become the rows of the value scorecard." },
+        { id: "k4", t: "Get the mutual success plan signed off", who: ["Strategist", "Customer"], tpl: "Mutual success plan", d: "One page, co-owned with the sponsor: two outcomes, a baseline and a target date for each, and who owns what on both sides. The outcomes become the rows of the value scorecard." },
         { id: "k5", t: "Walk IT and security through governance", who: ["FDE", "Customer"], d: "SSO and roles, audit logs, Code Security checks before publish, and the Edit, Preview and Production environments." },
         { id: "k6", t: "Name the champion, IT lead and security contact", who: ["Strategist", "Customer"] },
         { id: "k7", t: "Agree the meeting rhythm and the weekly sponsor note", who: ["Strategist", "Customer"], tpl: "Weekly sponsor note", go: "note" },
@@ -702,14 +718,14 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       watch: ["Data access requests with no owner", "Security review not scheduled", "Setup slipping past the planned training date"]
     },
     {
-      id: "first", n: "4", name: "First apps live", short: "First apps",
-      goal: "Get the first apps into production about 30 days after kickoff, and create the first internal success stories.",
+      id: "first", n: "4", name: "First apps live", short: "First apps", span: "30-day target",
+      goal: "Time to first value: the first apps in production about 30 days after kickoff, and the first internal success stories.",
       items: [
         { id: "f1", t: "Pick the first apps", who: ["Strategist", "Customer"], tpl: "Use-case scoring sheet", brief: "apps", d: "Pick from the patterns Superblocks fits best: a spreadsheet process to replace, a SaaS tool to replace, a prototype to bring under IT controls, or an automation. Favor apps that are valuable, use data that's already connected, and have a named business owner." },
         { id: "f2", t: "Train {builders} builders in {groups}", who: ["Strategist"], tpl: "Training agenda", d: "Two days per group. Cover Plan mode before Build mode, checkpoints, Preview and Publish, and fixing security findings with Clark." },
         { id: "f3", t: "Hold office hours twice a week", who: ["Strategist"] },
         { id: "f4", t: "Pair on the hardest app", who: ["FDE"], d: "The FDE pairs with the builder on the most complex app or integration, so it doesn't hold up the rest." },
-        { id: "f5", t: "Get the first apps into production, each with 10 or more end users", who: ["Customer", "Strategist"], d: "Builders build, and each app's business owner tests it and signs it off." },
+        { id: "f5", t: "Get the first apps into production, each with 10 or more end users", who: ["Customer", "Strategist"], d: "Builders build, and each app's business owner tests it and signs it off. This is the time to first value target: about 30 days after kickoff." },
         { id: "f6", t: "Write the first success story", who: ["Strategist", "Customer"], tpl: "First apps showcase", d: "One story the champion can share inside the company: the problem, the app, and what changed." }
       ],
       watch: ["A first app needs data that isn't connected", "Builders wait on the FDE for everything", "An app with no named business owner"]
@@ -734,10 +750,10 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       rhythm: [
         { k: "Weekly", t: "Sponsor note: what shipped, what it saved, and what's blocked.", go: "note" },
         { k: "Monthly", t: "Usage against the commitment, reviewed with the account exec, so a renewal or expansion conversation never comes as a surprise." },
-        { k: "Quarterly", t: "Value review with the sponsor, against the kickoff outcomes." }
+        { k: "Quarterly", t: "Executive business review (EBR) with the sponsor, against the kickoff outcomes." }
       ],
       items: [
-        { id: "v1", t: "Hold the first value review against the kickoff outcomes", who: ["Strategist", "Customer"], tpl: "Quarterly value review", d: "Walk the sponsor through the scorecard above: each outcome against its baseline, in hours and dollars." },
+        { id: "v1", t: "Hold the first executive business review (EBR)", who: ["Strategist", "Customer"], tpl: "EBR deck", d: "Walk the sponsor through the scorecard above: each outcome against its baseline, in hours and dollars." },
         { id: "v2", t: "Write the one-sentence result the sponsor can repeat to their boss", who: ["Strategist"] },
         { id: "v3", t: "Log requests from other departments as they come in", who: ["Strategist"], d: "Each one goes through Requests and feedback. Requests from new teams are the best sign of where to expand." },
         { id: "v4", t: "Name the next department and its sponsor", who: ["Strategist", "Customer"] },
@@ -796,7 +812,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       add("adopt", "wave-2", "Wave 2: bring in the remaining departments, using wave 1 apps as examples", "4+ departments", ["Strategist", "Customer"]);
     }
     if (i.depts === "1") {
-      add("value", "second-dept", "Name the second department by the value review and invite them to demo day", "1 department");
+      add("value", "second-dept", "Name the second department by the first EBR and invite them to demo day", "1 department");
     }
     if (i.builders > 40) {
       add("adopt", "builder-leads", "Name a builder lead in each department to run local office hours", i.builders + " builders", ["Strategist", "Customer"]);
@@ -900,12 +916,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     { group: "Plan", items: [{ id: "handoff" }, { id: "kickoff" }] },
     { group: "Set up and govern", items: [{ id: "setup" }] },
     { group: "Launch and grow", items: [{ id: "first" }, { id: "adopt" }, { id: "value" }] },
-    { group: "As needed", items: [{ id: "health", label: "Health and recovery", icon: "pulse" }, { id: "requests", label: "Requests and feedback", icon: "inbox" }] },
+    { group: "As needed", items: [{ id: "health", label: "Health and activation plans", icon: "pulse" }, { id: "requests", label: "Requests and feedback", icon: "inbox" }] },
     { group: "Report", items: [{ id: "note", label: "Weekly sponsor note", icon: "file" }] },
     { group: "Before this is real", items: [{ id: "questions", label: "Open questions", icon: "help" }, { id: "about", label: "About this draft", icon: "info" }] }
   ];
   var STAGE_IDS = STAGES.map(function (s) { return s.id; });
-  var TITLES = { overview: "Overview", account: "Account setup", health: "Health and recovery", requests: "Requests and feedback", note: "Weekly sponsor note", questions: "Open questions", about: "About this draft" };
+  var TITLES = { overview: "Overview", account: "Account setup", health: "Health and activation plans", requests: "Requests and feedback", note: "Weekly sponsor note", questions: "Open questions", about: "About this draft" };
   STAGE_IDS.forEach(function (id) { TITLES[id] = STAGE_NAV[id]; });
 
   var current = "overview";
@@ -1155,7 +1171,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       '<div class="col"><div class="col-h"><span class="num">3</span>Launch and grow</div>' + stageRow("first") + stageRow("adopt") + stageRow("value") + "</div>";
     document.getElementById("ov-flow").innerHTML = flow;
     document.getElementById("ov-always").innerHTML =
-      '<button type="button" class="chip" data-go="health">' + icon("pulse") + "Health and recovery</button>" +
+      '<button type="button" class="chip" data-go="health">' + icon("pulse") + "Health and activation plans</button>" +
       '<button type="button" class="chip" data-go="requests">' + icon("inbox") + "Requests and feedback</button>";
     renderBrief();
   }
@@ -1223,9 +1239,9 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       return '<label class="sf' + (cls ? " " + cls : "") + '"><span class="sl">' + label + '</span><input type="text" data-score="' + key + '" value="' + esc(v) + '" placeholder="' + esc(ph) + '" maxlength="120" autocomplete="off"></label>';
     }
     var rows = s.rows.map(function (r, i) {
-      return '<div class="sc-row">' + f("Outcome " + (i + 1), i + ".o", r.o, "From the success plan", "wide") +
+      return '<div class="sc-row">' + f("Outcome " + (i + 1), i + ".o", r.o, "From the mutual success plan", "wide") +
         '<label class="sf kind"><span class="sl">Kind of value</span><select data-score="' + i + '.k">' + VALUE_KINDS.map(function (k) { return '<option value="' + k[0] + '"' + (r.k === k[0] ? " selected" : "") + ">" + k[1] + "</option>"; }).join("") + "</select></label>" +
-        f("Baseline", i + ".b", r.b, "Set at kickoff") + f("Latest", i + ".n", r.n, "At the last review") + f("Note", i + ".note", r.note, "Where the number comes from", "note") + "</div>";
+        f("Baseline", i + ".b", r.b, "Set at kickoff") + f("Latest", i + ".n", r.n, "At the last EBR") + f("Note", i + ".note", r.note, "Where the number comes from", "note") + "</div>";
     }).join("");
     var usage = '<div class="sc-row usage"><div class="sf span2"><span class="sl">Usage</span><span class="sc-fixed">Usage against the commitment</span></div>' +
       f("Commitment", "commit", s.commit, "From the contract") + f("Used so far", "used", s.used, "From Plan & Usage") + f("Note", "unote", s.unote, "On pace, below or above", "note") + "</div>";
