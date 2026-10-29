@@ -295,18 +295,17 @@ input[type="number"]:focus-visible { outline: 2px solid var(--dark); outline-off
 .vcard.new { background: var(--ok-soft); border-color: transparent; }
 .vcard.new .k { color: var(--ok); }
 .hint { font-size: 12.5px; color: var(--muted); }
+.signs li { padding: 0; }
+.signs label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 16px; cursor: pointer; width: 100%; }
+.signs li.on { background: var(--risk-soft); }
+.signs .cl-check input:checked { background: var(--risk); border-color: var(--risk); }
+.h-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 13px 16px; }
+.h-status p { flex: 1 1 320px; font-size: 13.5px; color: var(--ink-2); }
 .qlist { margin: 0; padding: 0; list-style: none; counter-reset: q; }
 .qlist li { counter-increment: q; display: flex; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
 .qlist li:first-child { border-top: 0; }
 .qlist li::before { content: counter(q); width: 22px; height: 22px; border-radius: 6px; background: var(--panel); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; color: var(--ink-2); }
 a { color: var(--ink); text-underline-offset: 2px; }
-.beliefs { margin: 0; padding: 0; list-style: none; counter-reset: b; }
-.beliefs li { counter-increment: b; display: flex; gap: 12px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-2); }
-.beliefs li:first-child { border-top: 0; }
-.beliefs li::before { content: counter(b); width: 22px; height: 22px; border-radius: 6px; background: var(--dark); color: var(--on-dark); font-size: 11.5px; font-weight: 600; display: grid; place-items: center; flex: none; }
-.beliefs b { color: var(--ink); font-weight: 600; }
-.start-foot { padding: 10px 16px; border-top: 1px solid var(--line); background: #FAFBFC; border-radius: 0 0 11px 11px; font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
-.start-foot b { color: var(--ink-2); font-weight: 600; }
 
 /* Account switcher */
 /* Account brief */
@@ -403,21 +402,11 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       <div class="ph">
         <div class="ph-text">
           <h1 id="ov-title">Customer deployment</h1>
-          <p>One process for every new customer, from signed contract to renewal. Set up the account and every stage adjusts.</p>
         </div>
-      </div>
-      <div class="card">
-        <div class="card-h"><h2>Start here</h2><span class="sub">How I'd run deployments, in three beliefs</span></div>
-        <ol class="beliefs">
-          <li><span><b>The first 30 days decide the renewal.</b> Agree the sponsor's outcomes before anyone builds, then get the first apps live about 30 days after kickoff.</span></li>
-          <li><span><b>Value is hours and dollars, never logins.</b> The sponsor agrees two outcomes and a baseline for each at kickoff, and every review comes back to them.</span></li>
-          <li><span><b>Every customer gets the same playbook.</b> The account setup decides the work involved, not the contract size.</span></li>
-        </ol>
-        <div class="start-foot"><span><b>Who it's for:</b> Enterprise accounts that want hands-on help from post-sales, with leaders willing to push AI adoption internally.</span><span><b>How to use it:</b> open any stage and tick items as you go, or change Account setup and watch every stage adapt.</span></div>
       </div>
       <div class="ov-head">
         <div class="strip" id="ov-strip"></div>
-        <div class="legend"><span>Status comes from customer readiness:</span><span><i class="dot ok"></i>On track: all 7 ready</span><span><i class="dot warn"></i>Watch: any partly ready</span><span><i class="dot risk"></i>At risk: any not yet</span></div>
+        <div class="legend" id="ov-legend"></div>
       </div>
       <div class="factory">
         <div class="teams" id="ov-teams"></div>
@@ -524,19 +513,12 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
 
     <!-- Health and activation plans -->
     <section class="page" id="page-health" data-page="health" hidden>
-      <div class="ph"><div class="ph-text"><span class="crumb">As needed</span><h1>Health and activation plans</h1><p>Use at any stage. Check every account weekly. When a trigger fires, run an activation plan: find the cause, then get usage back.</p></div></div>
+      <div class="ph"><div class="ph-text"><span class="crumb">As needed</span><h1>Health and activation plans</h1><p>Use at any stage. Check every account weekly. When a sign appears, run an activation plan: find the cause, then get usage back.</p></div></div>
+      <div class="card h-status" id="health-status"></div>
       <div class="grid2">
         <div class="card">
-          <div class="card-h"><h2>Start an activation plan when</h2></div>
-          <ul class="items flagged">
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Weekly active builders fall 30% or more for two weeks in a row</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>No new app reaches production in three weeks</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>The sponsor or champion changes roles or leaves</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>More than a quarter of trained builders have stalled</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Usage is pacing well below the contract commitment</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Builders hit their spend limit, which pauses Clark until an admin raises it</span></li>
-            <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"/></svg><span>Publishes keep getting blocked by Code Security findings</span></li>
-          </ul>
+          <div class="card-h"><h2>Start an activation plan when</h2><span class="sub" id="health-sub"></span></div>
+          <ul class="items signs" id="health-signs"></ul>
           <div class="card-b" style="border-top:1px solid var(--line)"><p class="hint">Where to look: Plan &amp; Usage (usage by user, app and day, and published-app views), audit logs, or the Admin MCP.</p></div>
         </div>
         <div class="card">
@@ -637,7 +619,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <li>How many existing customers are still mainly on Low-Code, and is moving them to Clark part of this role?</li>
           <li>How does the team track usage against each customer's commitment, and what pace counts as healthy?</li>
           <li>When does renewal planning start today, and who owns it with the account executive?</li>
-          <li>Is about 30 days from kickoff to first apps live the right time to first value target?</li>
+          <li>How long does it take today from kickoff to the first app in production, and what usually holds it up?</li>
           <li>Where does account tracking live today, and should these checklists feed into it?</li>
         </ol>
       </div>
@@ -653,7 +635,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
           <li><span><b>Data.</b> The SoFi example account uses only SoFi's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or SoFi data. The SoFi scorecard has no numbers on purpose. The weekly sponsor note is a fictional sample.</span></li>
           <li><span><b>Saved.</b> Account setup, the brief, ticked items, your own watch-outs and the scorecard are saved in this browser only.</span></li>
-          <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. The 30-day first-apps target is an estimate, listed under Open questions.</span></li>
+          <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. Thresholds such as the 30% usage drop are my estimates.</span></li>
         </ul>
       </div>
     </section>
@@ -718,14 +700,14 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       watch: ["Data access requests with no owner", "Security review not scheduled", "Setup slipping past the planned training date"]
     },
     {
-      id: "first", n: "4", name: "First apps live", short: "First apps", span: "30-day target",
-      goal: "Time to first value: the first apps in production about 30 days after kickoff, and the first internal success stories.",
+      id: "first", n: "4", name: "First apps live", short: "First apps",
+      goal: "Time to first value: the first apps in production as soon as setup allows, and the first internal success stories.",
       items: [
         { id: "f1", t: "Pick the first apps", who: ["Strategist", "Customer"], tpl: "Use-case scoring sheet", brief: "apps", d: "Pick from the patterns Superblocks fits best: a spreadsheet process to replace, a SaaS tool to replace, a prototype to bring under IT controls, or an automation. Favor apps that are valuable, use data that's already connected, and have a named business owner." },
         { id: "f2", t: "Train {builders} builders in {groups}", who: ["Strategist"], tpl: "Training agenda", d: "Two days per group. Cover Plan mode before Build mode, checkpoints, Preview and Publish, and fixing security findings with Clark." },
         { id: "f3", t: "Hold office hours twice a week", who: ["Strategist"] },
         { id: "f4", t: "Pair on the hardest app", who: ["FDE"], d: "The FDE pairs with the builder on the most complex app or integration, so it doesn't hold up the rest." },
-        { id: "f5", t: "Get the first apps into production, each with 10 or more end users", who: ["Customer", "Strategist"], d: "Builders build, and each app's business owner tests it and signs it off. This is the time to first value target: about 30 days after kickoff." },
+        { id: "f5", t: "Get the first apps into production, each with 10 or more end users", who: ["Customer", "Strategist"], d: "Builders build, and each app's business owner tests it and signs it off. The time from kickoff to this point is the account's time to first value. Ticking this item also switches the account's status to health signs." },
         { id: "f6", t: "Write the first success story", who: ["Strategist", "Customer"], tpl: "First apps showcase", d: "One story the champion can share inside the company: the problem, the app, and what changed." }
       ],
       watch: ["A first app needs data that isn't connected", "Builders wait on the FDE for everything", "An app with no named business owner"]
@@ -765,6 +747,18 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       watch: ["Value is only described as usage", "The sponsor can't repeat the results", "No requests from other teams by month three", "Usage is pacing well below the commitment (a renewal risk) or well above it (an expansion conversation, not a surprise bill)", "The sponsor changes role or leaves"]
     }
   ];
+
+  // Signs that an account needs an activation plan. Once the first apps are live, they set the status.
+  var HEALTH = [
+    { id: "drop", t: "Weekly active builders fall 30% or more for two weeks in a row" },
+    { id: "noapp", t: "No new app reaches production in three weeks" },
+    { id: "people", t: "The sponsor or champion changes roles or leaves" },
+    { id: "stalled", t: "More than a quarter of trained builders have stalled" },
+    { id: "pace", t: "Usage is pacing well below the contract commitment" },
+    { id: "spend", t: "Builders hit their spend limit, which pauses Clark until an admin raises it" },
+    { id: "blocked", t: "Publishes keep getting blocked by Code Security findings" }
+  ];
+  var LIVE_ITEM = "f5";
 
   var VALUE_KINDS = [["time", "Time back"], ["spend", "Spend cut"], ["eng", "Engineering refocused"], ["risk", "Risk reduced"]];
 
@@ -916,7 +910,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     { group: "Plan", items: [{ id: "handoff" }, { id: "kickoff" }] },
     { group: "Set up and govern", items: [{ id: "setup" }] },
     { group: "Launch and grow", items: [{ id: "first" }, { id: "adopt" }, { id: "value" }] },
-    { group: "As needed", items: [{ id: "health", label: "Health and activation plans", icon: "pulse" }, { id: "requests", label: "Requests and feedback", icon: "inbox" }] },
+    { group: "As needed", items: [{ id: "health", label: "Health and activation plans", icon: "pulse", badge: "health" }, { id: "requests", label: "Requests and feedback", icon: "inbox" }] },
     { group: "Report", items: [{ id: "note", label: "Weekly sponsor note", icon: "file" }] },
     { group: "Before this is real", items: [{ id: "questions", label: "Open questions", icon: "help" }, { id: "about", label: "About this draft", icon: "info" }] }
   ];
@@ -970,6 +964,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     a.done = a.done || {};
     a.watchouts = a.watchouts || {};
     a.score = a.score || emptyScore();
+    a.health = a.health || {};
     return a;
   }
   function loadAccounts() {
@@ -994,6 +989,14 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   function acct() { return accounts.filter(function (a) { return a.id === currentAcct; })[0]; }
   function initials(n) { return String(n).split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join("") || "?"; }
   function lvlName(l) { return l === "ok" ? "On track" : l === "warn" ? "Watch" : "At risk"; }
+  // Before the first apps are live, status comes from customer readiness. After that, it comes from health signs.
+  function isLive(a) { return !!a.done[LIVE_ITEM]; }
+  function signCount(a) { return HEALTH.filter(function (h) { return (a.health || {})[h.id]; }).length; }
+  function statusOf(a, p) {
+    if (!isLive(a)) return p.overall;
+    var n = signCount(a);
+    return n === 0 ? "ok" : n === 1 ? "warn" : "risk";
+  }
 
   // Readiness rows
   var readinessEl = document.getElementById("readiness");
@@ -1043,10 +1046,10 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   }
   function renderSwitcher() {
     var a = acct();
-    var html = '<button type="button" class="acct-btn" id="acct-btn" aria-haspopup="true" aria-expanded="' + acctOpen + '"><span class="acct-av">' + esc(initials(a.name)) + '</span><span class="acct-meta"><span class="acct-name">' + esc(a.name) + '</span><span class="acct-sub">' + (a.sample ? "Example account" : "Your account") + " · " + lvlName(plan.overall) + "</span></span>" + icon("updown") + "</button>";
+    var html = '<button type="button" class="acct-btn" id="acct-btn" aria-haspopup="true" aria-expanded="' + acctOpen + '"><span class="acct-av">' + esc(initials(a.name)) + '</span><span class="acct-meta"><span class="acct-name">' + esc(a.name) + '</span><span class="acct-sub">' + (a.sample ? "Example account" : "Your account") + " · " + lvlName(statusOf(a, plan)) + "</span></span>" + icon("updown") + "</button>";
     if (acctOpen) {
       html += '<div class="acct-menu" role="menu" aria-label="Accounts"><div class="acct-label">Accounts</div>' + accounts.map(function (x) {
-        var l = computePlan(x.inputs).overall;
+        var l = statusOf(x, computePlan(x.inputs));
         return '<button type="button" class="acct-opt" role="menuitem" data-acct="' + esc(x.id) + '"' + (x.id === currentAcct ? ' aria-current="true"' : "") + '><span class="acct-av">' + esc(initials(x.name)) + '</span><span class="acct-meta"><span class="acct-name">' + esc(x.name) + '</span><span class="acct-sub">' + (x.sample ? "Example" : "Yours") + " · " + lvlName(l) + '</span></span><span class="dot ' + l + '"></span></button>';
       }).join("") + '<div class="acct-sep"></div><button type="button" class="acct-opt" role="menuitem" data-acct-new="1"><span class="acct-av">' + icon("plus") + '</span><span class="acct-meta"><span class="acct-name">New account</span><span class="acct-sub">Saved in this browser only</span></span></button></div>';
     }
@@ -1077,6 +1080,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     if (kind === "reset" && a.sample) {
       var orig = sampleOf(a.id);
       if (orig) ["name", "inputs", "brief", "done", "watchouts", "score"].forEach(function (k) { a[k] = clone(orig[k]); });
+      a.health = {};
       writeInputs(a);
       update();
     }
@@ -1119,6 +1123,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
         var ic = isStage ? STAGE_ICON[it.id] : it.icon;
         var badge = "";
         if (it.badge === "ready") badge = '<span class="nav-badge ' + plan.overall + '" title="Customer readiness: ' + lvlName(plan.overall) + '">' + Math.round(plan.ready / READINESS.length * 100) + "%</span>";
+        if (it.badge === "health" && isLive(acct()) && signCount(acct())) badge = '<span class="nav-badge ' + statusOf(acct(), plan) + '" title="Health signs showing">' + signCount(acct()) + "</span>";
         if (isStage) badge = pctBadge(stageProgress(it.id));
         html += '<button type="button" class="nav-item" data-go="' + it.id + '"' + (it.id === current ? ' aria-current="page"' : "") + ">" + icon(ic) + '<span class="nav-label">' + esc(label) + "</span>" + badge + "</button>";
       });
@@ -1139,11 +1144,16 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   }
 
   function renderOverview() {
-    var tp = totalProgress();
+    var tp = totalProgress(), a = acct(), live = isLive(a), signs = signCount(a), st = statusOf(a, plan);
+    document.getElementById("ov-legend").innerHTML = live
+      ? '<span>First apps are live, so status comes from health signs:</span><span><i class="dot ok"></i>On track: none</span><span><i class="dot warn"></i>Watch: one</span><span><i class="dot risk"></i>At risk: two or more</span>'
+      : '<span>Until first apps are live, status comes from customer readiness:</span><span><i class="dot ok"></i>On track: all 7 ready</span><span><i class="dot warn"></i>Watch: any partly ready</span><span><i class="dot risk"></i>At risk: any not yet</span>';
     document.getElementById("ov-strip").innerHTML =
       '<div class="strip-i"><span class="k">Plan</span><span class="v">Enterprise</span><span class="s">Comes with a dedicated account team</span></div>' +
-      '<div class="strip-i"><span class="k">Status</span><span class="v"><span class="pill ' + plan.overall + '">' + lvlName(plan.overall) + '</span></span><span class="s">From customer readiness</span></div>' +
-      '<button type="button" class="strip-i" data-go="account"><span class="k">Customer readiness</span><span class="v">' + plan.ready + " of " + READINESS.length + ' ready</span><span class="s">Edit in Account setup</span></button>' +
+      '<div class="strip-i"><span class="k">Status</span><span class="v"><span class="pill ' + st + '">' + lvlName(st) + '</span></span><span class="s">' + (live ? "From health signs" : "From customer readiness") + '</span></div>' +
+      (live
+        ? '<button type="button" class="strip-i" data-go="health"><span class="k">Health signs</span><span class="v">' + (signs ? signs + " of " + HEALTH.length + " showing" : "None showing") + '</span><span class="s">Check weekly on Health</span></button>'
+        : '<button type="button" class="strip-i" data-go="account"><span class="k">Customer readiness</span><span class="v">' + plan.ready + " of " + READINESS.length + ' ready</span><span class="s">Edit in Account setup</span></button>') +
       '<div class="strip-i"><span class="k">Progress</span><span class="v">' + tp.done + " of " + tp.total + " done</span>" + bar(tp) + "</div>";
 
     var dep = val("deploy");
@@ -1268,12 +1278,29 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       (next ? '<button type="button" class="chip" data-go="' + next + '">' + esc(STAGE_NAV[next]) + " →</button>" : "") + "</div>";
     document.getElementById("page-stage").innerHTML = html;
   }
+  function renderHealthStatus() {
+    var a = acct(), st = statusOf(a, plan), name = esc(a.name);
+    var msg = isLive(a)
+      ? name + "'s first apps are live, so its status comes from these signs: none is On track, one is Watch, two or more is At risk." + (signCount(a) ? " Start an activation plan this week." : "")
+      : name + " isn't live yet, so its status comes from customer readiness. Once the first apps are in production, ticked on First apps live, it comes from these signs instead: none is On track, one is Watch, two or more is At risk.";
+    document.getElementById("health-status").innerHTML = '<span class="pill ' + st + '">' + lvlName(st) + "</span><p>" + msg + "</p>" + (isLive(a) ? "" : '<button type="button" class="chip" data-go="first">Open First apps live</button>');
+  }
+  function renderHealth() {
+    var a = acct();
+    document.getElementById("health-sub").textContent = "Tick what's happening at " + a.name;
+    document.getElementById("health-signs").innerHTML = HEALTH.map(function (h) {
+      var on = !!a.health[h.id];
+      return '<li' + (on ? ' class="on"' : "") + '><label><span class="cl-check"><input type="checkbox" data-sign="' + h.id + '"' + (on ? " checked" : "") + "></span><span>" + esc(h.t) + "</span></label></li>";
+    }).join("");
+    renderHealthStatus();
+  }
   function refreshStageProgress() {
     var p = stageProgress(current);
     var b = document.getElementById("st-bar");
     if (b) { b.className = "progress " + progClass(p); b.firstChild.style.width = p.pct + "%"; }
     var t = document.getElementById("st-prog");
     if (t) t.textContent = p.done + " of " + p.total + " done";
+    renderSwitcher();
     renderNav();
   }
   function toggleItem(id) {
@@ -1320,6 +1347,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     });
     if (isStage) renderStage(id);
     if (id === "overview") renderOverview();
+    if (id === "health") renderHealth();
     if (id === "account") fitBrief();
     renderNav();
     document.getElementById("topbar-title").textContent = TITLES[id];
@@ -1389,6 +1417,17 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       return;
     }
     if (e.target.hasAttribute("data-score")) setScore(e.target);
+  });
+  document.getElementById("page-health").addEventListener("change", function (e) {
+    var id = e.target.getAttribute("data-sign");
+    if (!id) return;
+    var a = acct();
+    if (e.target.checked) a.health[id] = true; else delete a.health[id];
+    e.target.closest("li").classList.toggle("on", e.target.checked);
+    saveAccounts();
+    renderHealthStatus();
+    renderSwitcher();
+    renderNav();
   });
   stagePage.addEventListener("input", function (e) { if (e.target.hasAttribute("data-score")) setScore(e.target); });
   stagePage.addEventListener("submit", function (e) {
