@@ -349,6 +349,40 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
 .btn-quiet:hover { background: #FAFBFC; }
 .btn-quiet.danger { color: var(--risk); }
 
+/* Update from a meeting */
+.ai-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; margin: 0 0 4px; border: 0; border-radius: 9px; background: var(--dark); color: var(--on-dark); font-size: 13px; font-weight: 500; cursor: pointer; text-align: left; }
+.ai-btn:hover { background: #2C323A; }
+.ai-btn[aria-current="page"] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--faint); }
+.ai-btn:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+.btn-primary { font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--dark); background: var(--dark); color: var(--on-dark); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary:hover { background: #2C323A; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary:focus-visible, .btn-quiet:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+.up-in { display: flex; flex-direction: column; gap: 10px; }
+.up-in textarea { min-height: 240px; }
+.up-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.up-bar .hint { margin-left: auto; font-variant-numeric: tabular-nums; }
+.up-status { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; font-size: 13px; background: var(--info-soft); color: var(--info); }
+.up-status.err { background: var(--risk-soft); color: var(--risk); }
+.up-status.ok { background: var(--ok-soft); color: var(--ok); }
+.spin { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } }
+.up-sum { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.up-sum p { font-size: 13.5px; color: var(--ink-2); max-width: 80ch; }
+.up-list { list-style: none; margin: 0; padding: 0; }
+.up-list li { border-top: 1px solid var(--line); }
+.up-list li:first-child { border-top: 0; }
+.up-list label { display: flex; gap: 12px; align-items: flex-start; padding: 11px 16px; cursor: pointer; }
+.up-list li.off .up-what { color: var(--muted); }
+.up-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.up-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12px; color: var(--muted); }
+.up-what { font-size: 13.5px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
+.up-ev { font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--line-2); padding-left: 8px; overflow-wrap: anywhere; }
+.up-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); background: #FAFBFC; border-radius: 0 0 11px 11px; font-size: 13px; }
+.up-foot .hint { flex: 1 1 220px; text-align: right; }
+@media (max-width: 700px) { .up-foot .hint, .up-bar .hint { text-align: left; margin-left: 0; } }
+
 /* Mobile */
 .scrim { display: none; }
 @media (max-width: 900px) {
@@ -386,6 +420,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       </div>
     </div>
     <div class="acct" id="acct"></div>
+    <button type="button" class="ai-btn" id="ai-btn" data-go="update"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"/><path d="M18.5 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/></svg>Update from a meeting</button>
     <div id="nav"></div>
     <div class="side-foot">Unofficial draft by Sardar Ahmar Wasif. Not a Superblocks product. The SoFi example uses public information only.</div>
   </nav>
@@ -605,6 +640,26 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
       </div>
     </section>
 
+    <!-- Update from a meeting -->
+    <section class="page" id="page-update" data-page="update" hidden>
+      <div class="ph"><div class="ph-text"><span class="crumb">Claude</span><h1>Update from a meeting</h1><p>Paste a transcript or your notes from a customer meeting. Claude reads them against this account's checklists, readiness, health signs, scorecard and brief, and suggests updates, each with the line that supports it. Nothing changes until you apply it.</p></div></div>
+      <div class="banner" id="up-offline" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg><span>This copy of the page has no server, so it can't reach Claude. Try it on the live site: <a href="https://ahmar-superblocks-playbook.vercel.app/#update" target="_blank" rel="noopener">ahmar-superblocks-playbook.vercel.app</a></span></div>
+      <div class="card">
+        <div class="card-h"><h2>Transcript or notes</h2><span class="sub" id="up-acct"></span></div>
+        <div class="card-b up-in">
+          <textarea id="up-text" rows="12" maxlength="40000" aria-label="Meeting transcript or notes" placeholder="Paste a transcript from Zoom, Teams or Gong, or your own notes"></textarea>
+          <p class="hint" id="up-sample-note" hidden>Fictional sample: a made-up SoFi working session. Speakers are labeled by role, and every number is made up.</p>
+          <div class="up-bar">
+            <button type="button" class="btn-primary" id="up-run"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"/><path d="M18.5 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/></svg>Suggest updates</button>
+            <button type="button" class="btn-quiet" id="up-sample">Load a sample SoFi meeting</button>
+            <span class="hint" id="up-count"></span>
+          </div>
+        </div>
+      </div>
+      <div id="up-status" aria-live="polite"></div>
+      <div class="card" id="up-results" hidden></div>
+    </section>
+
     <!-- Open questions -->
     <section class="page" id="page-questions" data-page="questions" hidden>
       <div class="ph"><div class="ph-text"><span class="crumb">Before this is real</span><h1>Open questions</h1><p>This draft is built from the outside, using public docs. These answers would change it.</p></div></div>
@@ -635,6 +690,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
           <li><span><b>What it is not.</b> An official Superblocks document or product. The console-style layout is an homage to make it easy to picture in use.</span></li>
           <li><span><b>Data.</b> The SoFi example account uses only SoFi's public information, with sources listed on its overview. Its profile, readiness answers and brief are my assumptions to confirm at handoff, not Superblocks or SoFi data. The SoFi scorecard has no numbers on purpose. The weekly sponsor note is a fictional sample.</span></li>
           <li><span><b>Saved.</b> Account setup, the brief, ticked items, your own watch-outs and the scorecard are saved in this browser only.</span></li>
+          <li><span><b>Claude.</b> Update from a meeting sends the pasted text and the account's playbook state to Claude through this site's server, which doesn't store them. Use the sample or your own notes, not confidential customer material.</span></li>
           <li><span><b>Sources.</b> Product details come from the <a href="https://docs.superblocks.com" target="_blank" rel="noopener">Superblocks docs</a>, the <a href="https://www.superblocks.com/pricing" target="_blank" rel="noopener">pricing page</a> and <a href="https://www.superblocks.com/blog/how-to-prove-ai-roi-to-your-board" target="_blank" rel="noopener">How to Prove AI ROI to Your Board</a>, as of October 2026. Thresholds such as the 30% usage drop are my estimates.</span></li>
         </ul>
       </div>
@@ -761,6 +817,35 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   var LIVE_ITEM = "f5";
 
   var VALUE_KINDS = [["time", "Time back"], ["spend", "Spend cut"], ["eng", "Engineering refocused"], ["risk", "Risk reduced"]];
+
+  // Fictional meeting for trying Update from a meeting. Speakers are labeled by role; every number is made up.
+  var SAMPLE_MEETING = [
+    "Fictional sample, not a real SoFi meeting. Speakers are labeled by role, and every number is made up.",
+    "SoFi and Superblocks weekly working session, week 2",
+    "",
+    "[00:00] Strategist (Superblocks): Thanks, everyone. Three things today: lock the outcomes and baselines for the success plan, check where setup stands, and pick the first apps.",
+    "[00:41] Sponsor (SoFi, VP of member operations): Let's lock the outcomes. I want hours back in member services, and I want internal-tool requests off the engineering queue. Those are the two I'll be measured on.",
+    "[01:15] Strategist (Superblocks): Great. For the baselines, did the timing study happen?",
+    "[01:22] Member services lead (SoFi): It did. We timed 200 cases last week. Agents spend about 11 minutes per case switching between tools.",
+    "[01:48] IT lead (SoFi): And for the second one, the engineering backlog has 140 open internal-tool requests right now, with a median wait of six weeks. That's from Jira.",
+    "[02:10] Sponsor (SoFi): Put both numbers in the success plan and send it over. I'll sign it by Friday.",
+    "[02:30] Strategist (Superblocks): Will do. On people, we still need a day-to-day champion.",
+    "[02:38] Member services lead (SoFi): I'm happy to take that. I'll co-host office hours with you.",
+    "[02:45] Sponsor (SoFi): Good, that's settled. I'm also out for two weeks in mid-November, so send blockers to our member services lead while I'm away.",
+    "[03:02] IT lead (SoFi): I'm your IT lead for this. Our security contact will come from the security architecture team. I'll confirm who by Wednesday.",
+    "[03:20] Strategist (Superblocks): Thanks. For rhythm, I'll send the weekly sponsor note every Friday, and we'll keep this check-in every other Tuesday.",
+    "[03:31] Sponsor (SoFi): Fridays work.",
+    "[03:40] FDE (Superblocks): On setup, your cloud platform team is booked for the data plane deployment on the 12th. SSO is working in the test environment.",
+    "[04:05] IT lead (SoFi): Snowflake access for the member services tables is approved. Risk operations data is still waiting on data governance, and they haven't given us a date.",
+    "[04:22] FDE (Superblocks): Is there a non-production copy builders can write to?",
+    "[04:27] IT lead (SoFi): Yes, there's a staging copy of the member tables in Snowflake, refreshed nightly. Builders can write to that.",
+    "[04:45] Sponsor (SoFi): One more thing. Compliance wants to review any app that writes to member data before it goes to production, and their queue is about three weeks right now.",
+    "[05:02] Strategist (Superblocks): Then let's start with read-only apps where we can. On first apps, where did the team land?",
+    "[05:10] Member services lead (SoFi): The dispute tracker and the fraud alert review queue. Also, a couple of agents built a refund lookup in Lovable, and it uses a shared database password.",
+    "[05:31] Sponsor (SoFi): Agreed on those two as the first apps. And let's get that refund lookup under proper controls.",
+    "[05:40] FDE (Superblocks): We can import it so it runs on governed integrations with SSO.",
+    "[05:52] Strategist (Superblocks): Perfect. I'll send the success plan today. Thanks, everyone."
+  ].join("\n");
 
   // Turns the account setup answers into extra checklist items and watch-outs for the stages they affect.
   function computePlan(i) {
@@ -915,9 +1000,11 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     { group: "Before this is real", items: [{ id: "questions", label: "Open questions", icon: "help" }, { id: "about", label: "About this draft", icon: "info" }] }
   ];
   var STAGE_IDS = STAGES.map(function (s) { return s.id; });
-  var TITLES = { overview: "Overview", account: "Account setup", health: "Health and activation plans", requests: "Requests and feedback", note: "Weekly sponsor note", questions: "Open questions", about: "About this draft" };
+  var TITLES = { overview: "Overview", update: "Update from a meeting", account: "Account setup", health: "Health and activation plans", requests: "Requests and feedback", note: "Weekly sponsor note", questions: "Open questions", about: "About this draft" };
   STAGE_IDS.forEach(function (id) { TITLES[id] = STAGE_NAV[id]; });
 
+  // The live site has a server function that calls Claude. The standalone copy does not.
+  var AI_LIVE = true;
   var current = "overview";
   var lastNav = "", lastSwitcher = "";
   var plan;
@@ -1060,6 +1147,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   function switchAcct(id) {
     currentAcct = id;
     acctOpen = false;
+    resetUpdate();
     writeInputs(acct());
     update();
     show(current, false);
@@ -1077,6 +1165,7 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
   }
   function acctAction(kind) {
     var a = acct();
+    resetUpdate();
     if (kind === "reset" && a.sample) {
       var orig = sampleOf(a.id);
       if (orig) ["name", "inputs", "brief", "done", "watchouts", "score"].forEach(function (k) { a[k] = clone(orig[k]); });
@@ -1330,6 +1419,267 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     document.getElementById("prog-text").textContent = plan.ready + " of " + READINESS.length + " ready";
   }
 
+  // Update from a meeting: Claude suggests changes from a transcript, the strategist picks which to apply
+  var UP_MAX = 40000;
+  var KIND_ORDER = ["check", "readiness", "health", "score", "watchout", "brief"];
+  var KIND_TAG = { check: "Tick", readiness: "Readiness", health: "Health sign", score: "Scorecard", watchout: "Watch-out", brief: "Brief" };
+  var BRIEF_NAME = { company: "Company", why: "Why they bought", people: "Sponsor and contacts", teams: "Departments and waves", outcomes: "Draft outcomes for kickoff", apps: "First app ideas", watch: "Watch-outs" };
+  var R_NAME = { ready: "Ready", partial: "Partly", not: "Not yet" };
+  var SCORE_FIELD = { o: "outcome", k: "kind of value", b: "baseline", n: "latest", note: "note", commit: "Commitment", used: "Used so far", unote: "Usage note" };
+  var UP_ERR = {
+    not_configured: "Claude isn't connected on this site yet. The site owner needs to add an Anthropic API key in Vercel.",
+    bad_key: "The API key on this site isn't working. The site owner needs to check it in Vercel.",
+    no_credit: "The API key on this site has run out of credit or hit its spend limit.",
+    empty: "Paste a transcript or notes first.",
+    too_long: "That's longer than 40,000 characters. Paste the part of the meeting that matters, or split it in two.",
+    context_too_long: "This account's brief is too long to send. Shorten it under Account setup and try again.",
+    busy: "Too many requests in a short time. Try again in a few minutes.",
+    overloaded: "Claude is busy right now. Try again in a minute.",
+    refusal: "Claude declined to read this transcript. Try removing anything unrelated to the deployment.",
+    timeout: "Claude took too long to answer. Try a shorter transcript.",
+    network: "Couldn't reach the server. Check your connection and try again.",
+    failed: "Something went wrong. Try again."
+  };
+  var up = { busy: false, result: null, items: [], skipped: 0, applied: 0, undo: null, forAcct: null };
+
+  function resetUpdate() {
+    up.result = null; up.items = []; up.skipped = 0; up.applied = 0; up.undo = null; up.forAcct = null;
+    if (!up.busy) upStatus("", "");
+    renderUpResults();
+  }
+  // What Claude sees: this account's checklist items, readiness, health signs, watch-outs, scorecard and brief
+  function upContext() {
+    var a = acct();
+    var watch = plan.flags.map(function (f) { return { stage: f.stage, text: f.t + ": " + f.d }; });
+    STAGE_IDS.forEach(function (id) {
+      (a.watchouts[id] || []).forEach(function (t) { watch.push({ stage: id, text: t }); });
+      stageOf(id).watch.forEach(function (t) { watch.push({ stage: id, text: t, standard: true }); });
+    });
+    var brief = {};
+    BRIEF_KEYS.forEach(function (k) { brief[k] = String(a.brief[k] || "").slice(0, 2500); });
+    return {
+      account: a.name,
+      firstAppsLive: isLive(a),
+      stages: STAGE_IDS.map(function (id) {
+        return { id: id, name: STAGE_NAV[id], items: stageItems(id).map(function (x) { return { id: x.id, text: fill(x.t), done: !!a.done[x.id] }; }) };
+      }),
+      readiness: READINESS.map(function (r) { return { id: r.id, question: r.label, value: a.inputs.r[r.id] || "partial" }; }),
+      healthSigns: HEALTH.map(function (h) { return { id: h.id, sign: h.t, on: !!a.health[h.id] }; }),
+      watchouts: watch,
+      scorecard: a.score,
+      brief: brief
+    };
+  }
+  function findItem(id) {
+    var hit = null;
+    STAGE_IDS.forEach(function (s) { stageItems(s).forEach(function (x) { if (x.id === id) hit = { item: x, stage: s }; }); });
+    return hit;
+  }
+  // Checks a suggestion against the account as it is now. Returns how to show it, or null if it doesn't fit.
+  function describe(c) {
+    var a = acct(), t = String(c.target || "").trim(), v = String(c.value || "").trim();
+    if (c.kind === "check") {
+      var hit = findItem(t);
+      if (!hit || a.done[t]) return null;
+      return { where: STAGE_NAV[hit.stage], what: fill(hit.item.t), rank: STAGE_IDS.indexOf(hit.stage) };
+    }
+    if (c.kind === "readiness") {
+      var r = READINESS.filter(function (x) { return x.id === t; })[0], cur = a.inputs.r[t] || "partial";
+      if (!r || !R_NAME[v] || cur === v) return null;
+      return { where: "Account setup", what: r.label + ": " + R_NAME[cur] + " → " + R_NAME[v] };
+    }
+    if (c.kind === "health") {
+      var h = HEALTH.filter(function (x) { return x.id === t; })[0];
+      if (!h || a.health[t]) return null;
+      return { where: "Health", what: h.t };
+    }
+    if (c.kind === "watchout") {
+      if (STAGE_IDS.indexOf(t) < 0 || !v || (a.watchouts[t] || []).indexOf(v) > -1) return null;
+      return { where: STAGE_NAV[t], what: v.slice(0, 200), rank: STAGE_IDS.indexOf(t) };
+    }
+    if (c.kind === "score") {
+      var m = /^([01])\.(o|k|b|n|note)$/.exec(t);
+      if (!m && !/^(commit|used|unote)$/.test(t)) return null;
+      var curv = m ? a.score.rows[+m[1]][m[2]] : a.score[t];
+      if (!v || curv === v) return null;
+      var shown = v;
+      if (m && m[2] === "k") {
+        var kd = VALUE_KINDS.filter(function (k) { return k[0] === v; })[0];
+        if (!kd) return null;
+        shown = kd[1];
+      }
+      return { where: "Value scorecard", what: (m ? "Outcome " + (+m[1] + 1) + " " + SCORE_FIELD[m[2]] : SCORE_FIELD[t]) + ": " + shown.slice(0, 120) };
+    }
+    if (c.kind === "brief") {
+      if (!BRIEF_NAME[t] || !v || lines(a.brief[t]).indexOf(v) > -1) return null;
+      return { where: "Account brief · " + BRIEF_NAME[t], what: v.slice(0, 400) };
+    }
+    return null;
+  }
+  function buildItems(d) {
+    var seen = {};
+    up.items = []; up.skipped = 0; up.applied = 0; up.undo = null;
+    d.changes.forEach(function (c) {
+      var shown = c && describe(c);
+      var key = c && (c.kind + "|" + c.target + (c.kind === "watchout" || c.kind === "brief" ? "|" + c.value : ""));
+      if (!shown || seen[key]) { up.skipped++; return; }
+      seen[key] = true;
+      up.items.push({ c: { kind: c.kind, target: String(c.target).trim(), value: String(c.value).trim() }, shown: shown, ev: String(c.evidence || "").trim().slice(0, 300), on: true });
+    });
+    up.items.sort(function (x, y) {
+      return KIND_ORDER.indexOf(x.c.kind) - KIND_ORDER.indexOf(y.c.kind) || (x.shown.rank || 0) - (y.shown.rank || 0);
+    });
+  }
+  function upStatus(kind, html) {
+    var el = document.getElementById("up-status");
+    el.innerHTML = html ? '<div class="up-status' + (kind ? " " + kind : "") + '">' + (kind === "busy" ? '<span class="spin" aria-hidden="true"></span>' : "") + "<span>" + html + "</span></div>" : "";
+  }
+  function upCount() {
+    var n = document.getElementById("up-text").value.length;
+    document.getElementById("up-count").textContent = n.toLocaleString("en-US") + " of 40,000 characters";
+  }
+  function renderUpdatePage() {
+    document.getElementById("up-acct").textContent = "For " + acct().name;
+    document.getElementById("up-offline").hidden = AI_LIVE;
+    document.getElementById("up-run").disabled = !AI_LIVE || up.busy;
+    upCount();
+    renderUpResults();
+  }
+  function upFoot() {
+    var n = up.items.filter(function (x) { return x.on; }).length;
+    if (up.applied) {
+      return '<div class="up-foot"><span>Applied ' + up.applied + (up.applied === 1 ? " update" : " updates") + " to " + esc(acct().name) + '.</span><button type="button" class="btn-quiet" id="up-undo">Undo</button><button type="button" class="chip" data-go="overview">Open the overview</button></div>';
+    }
+    return '<div class="up-foot"><button type="button" class="btn-primary" id="up-apply"' + (n ? "" : " disabled") + ">Apply " + n + " selected</button>" +
+      '<button type="button" class="btn-quiet" id="up-toggle">' + (n === up.items.length ? "Clear all" : "Select all") + "</button>" +
+      '<span class="hint">Nothing changes until you apply.' + (up.skipped ? " " + up.skipped + (up.skipped === 1 ? " suggestion was" : " suggestions were") + " left out because " + (up.skipped === 1 ? "it" : "they") + " didn't match this account's current state." : "") + "</span></div>";
+  }
+  function renderUpResults() {
+    var box = document.getElementById("up-results");
+    if (!up.result) { box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    var head = '<div class="card-h"><h2>Suggested updates</h2><span class="sub">' + (up.items.length ? "Untick any you don't want" : "Nothing to change") + "</span></div>";
+    var sum = up.result.summary ? '<div class="up-sum"><div class="bk">Claude\'s read of the meeting</div><p>' + esc(up.result.summary) + "</p></div>" : "";
+    var list = up.items.length
+      ? '<ul class="up-list">' + up.items.map(function (x, i) {
+          return '<li' + (x.on ? "" : ' class="off"') + '><label><span class="cl-check"><input type="checkbox" data-up="' + i + '"' + (x.on ? " checked" : "") + (up.applied ? " disabled" : "") + "></span>" +
+            '<span class="up-main"><span class="up-top"><span class="tag">' + KIND_TAG[x.c.kind] + "</span><span>" + esc(x.shown.where) + '</span></span><span class="up-what">' + esc(x.shown.what) + "</span>" +
+            (x.ev ? '<span class="up-ev">“' + esc(x.ev) + "”</span>" : "") + "</span></label></li>";
+        }).join("") + "</ul>"
+      : '<div class="empty">Nothing in this transcript changes the playbook for this account.</div>';
+    box.innerHTML = head + sum + list + (up.items.length ? upFoot() : "");
+  }
+  function refreshUpFoot() {
+    var f = document.querySelector("#up-results .up-foot");
+    if (f) f.outerHTML = upFoot();
+  }
+  function runUpdate() {
+    var text = document.getElementById("up-text").value.trim(), a = acct(), t0 = Date.now();
+    if (!text) { upStatus("err", esc(UP_ERR.empty)); return; }
+    if (text.length > UP_MAX) { upStatus("err", esc(UP_ERR.too_long)); return; }
+    resetUpdate();
+    up.busy = true;
+    up.forAcct = a.id;
+    document.getElementById("up-run").disabled = true;
+    var msg = "Claude is reading the meeting against " + esc(a.name) + "'s playbook. This can take up to a minute.";
+    upStatus("busy", msg + ' <span id="up-secs">0s</span>');
+    var tick = setInterval(function () { var el = document.getElementById("up-secs"); if (el) el.textContent = Math.round((Date.now() - t0) / 1000) + "s"; }, 1000);
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var kill = setTimeout(function () { if (ctrl) ctrl.abort(); }, 150000);
+    fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ transcript: text, context: upContext() }), signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.json().catch(function () { return { error: r.status === 504 ? "timeout" : "failed" }; }); })
+      .then(function (d) {
+        if (!d || d.error || !Array.isArray(d.changes)) throw (d && d.error) || "failed";
+        if (up.forAcct !== currentAcct) { upStatus("", ""); return; }
+        buildItems(d);
+        up.result = d;
+        var secs = Math.round((Date.now() - t0) / 1000);
+        upStatus("ok", up.items.length ? "Claude suggested " + up.items.length + (up.items.length === 1 ? " update" : " updates") + " in " + secs + " seconds. Review them below." : "Claude read the meeting in " + secs + " seconds and found nothing to change.");
+        renderUpResults();
+        var box = document.getElementById("up-status");
+        if (box.scrollIntoView) box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      })
+      .catch(function (e) {
+        var code = typeof e === "string" ? e : e && e.name === "AbortError" ? "timeout" : "network";
+        upStatus("err", esc(UP_ERR[code] || UP_ERR.failed));
+      })
+      .then(function () {
+        clearInterval(tick);
+        clearTimeout(kill);
+        up.busy = false;
+        document.getElementById("up-run").disabled = !AI_LIVE;
+      });
+  }
+  function applyUpdate() {
+    var a = acct();
+    if (up.forAcct !== a.id || up.applied) return;
+    up.undo = clone(a);
+    var n = 0;
+    up.items.forEach(function (x) {
+      if (!x.on) return;
+      var c = x.c, v = c.value;
+      if (c.kind === "check") a.done[c.target] = true;
+      if (c.kind === "readiness") a.inputs.r[c.target] = v;
+      if (c.kind === "health") a.health[c.target] = true;
+      if (c.kind === "watchout") (a.watchouts[c.target] = a.watchouts[c.target] || []).push(v.slice(0, 200));
+      if (c.kind === "score") {
+        var m = /^([01])\.(\w+)$/.exec(c.target);
+        if (m) a.score.rows[+m[1]][m[2]] = v.slice(0, 120); else a.score[c.target] = v.slice(0, 120);
+      }
+      if (c.kind === "brief") {
+        var cur = String(a.brief[c.target] || "").replace(/\s+$/, "");
+        a.brief[c.target] = cur ? cur + "\n" + v : v;
+      }
+      n++;
+    });
+    up.applied = n;
+    writeInputs(a);
+    update();
+    upStatus("ok", "Applied " + n + (n === 1 ? " update" : " updates") + ". The overview, stages and status now reflect the meeting.");
+    renderUpResults();
+  }
+  function undoUpdate() {
+    if (!up.undo) return;
+    for (var i = 0; i < accounts.length; i++) if (accounts[i].id === up.undo.id) accounts[i] = ensure(up.undo);
+    up.undo = null;
+    up.applied = 0;
+    writeInputs(acct());
+    update();
+    upStatus("", "");
+    renderUpResults();
+  }
+  var upPage = document.getElementById("page-update");
+  upPage.addEventListener("click", function (e) {
+    var id = e.target.closest("button") ? e.target.closest("button").id : "";
+    if (id === "up-run") runUpdate();
+    if (id === "up-sample") {
+      var ta = document.getElementById("up-text");
+      ta.value = SAMPLE_MEETING;
+      document.getElementById("up-sample-note").hidden = false;
+      if (!up.busy) upStatus("", "");
+      upCount();
+    }
+    if (id === "up-apply") applyUpdate();
+    if (id === "up-undo") undoUpdate();
+    if (id === "up-toggle") {
+      var all = up.items.every(function (x) { return x.on; });
+      up.items.forEach(function (x) { x.on = !all; });
+      renderUpResults();
+    }
+  });
+  upPage.addEventListener("change", function (e) {
+    var i = e.target.getAttribute("data-up");
+    if (i === null) return;
+    up.items[+i].on = e.target.checked;
+    e.target.closest("li").classList.toggle("off", !e.target.checked);
+    refreshUpFoot();
+  });
+  document.getElementById("up-text").addEventListener("input", function () {
+    upCount();
+    if (!up.busy && document.querySelector("#up-status .err")) upStatus("", "");
+    if (this.value !== SAMPLE_MEETING) document.getElementById("up-sample-note").hidden = true;
+  });
+
   var sidebar = document.getElementById("sidebar"), scrim = document.getElementById("scrim"), menuBtn = document.getElementById("menu-btn");
   function setMenu(open) {
     sidebar.classList.toggle("open", open);
@@ -1348,6 +1698,8 @@ input[type="text"]:focus-visible { outline: 2px solid var(--dark); outline-offse
     if (isStage) renderStage(id);
     if (id === "overview") renderOverview();
     if (id === "health") renderHealth();
+    if (id === "update") renderUpdatePage();
+    if (id === "update") document.getElementById("ai-btn").setAttribute("aria-current", "page"); else document.getElementById("ai-btn").removeAttribute("aria-current");
     if (id === "account") fitBrief();
     renderNav();
     document.getElementById("topbar-title").textContent = TITLES[id];
